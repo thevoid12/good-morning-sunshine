@@ -1,0 +1,10 @@
+{
+  "logger":{
+    "filepath":"gms.logs",
+    "level":"debug"
+  },
+  "app":{
+    "port":"8080",
+    "uiTemplates":"client/ui/templates/"
+  }
+}
