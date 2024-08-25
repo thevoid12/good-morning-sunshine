@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"gms/client/routes"
+	"gms/pkg/email"
+	"gms/pkg/gms"
 	logs "gms/pkg/logger"
 	"log"
 
@@ -10,7 +12,7 @@ import (
 )
 
 func main() {
-
+	// email.SendEmail()
 	viper.SetConfigName("config")
 	viper.SetConfigType("json")
 	viper.AddConfigPath("config/") // path to look for the config file in
@@ -24,6 +26,8 @@ func main() {
 			log.Println("error laoding config file from viper", err)
 		}
 	}
+
+	gms.GoodMrngSunshine()
 	l, err := logs.InitializeLogger()
 	if err != nil {
 		log.Println("error initializing logger", err)
@@ -34,6 +38,8 @@ func main() {
 	// 	l.Sugar().Errorf("this is a big error", err)
 	ctx := context.Background()
 	ctx = logs.SetLoggerctx(ctx, l)
+
+	email.EmailSendJob()
 	route := routes.Initialize(ctx, l)
 	route.Run(":" + viper.GetString("app.port"))
 }

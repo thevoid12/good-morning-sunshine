@@ -10,3 +10,11 @@
 5. once the link is clicked he can go ahead typing a mail id, no of days the msg to be sent(max 7 days).
    <br>
 6. msg can be typed or chosen from the template. for next version the templates come from gpt
+   <br>
+   7. add git ignore
+   <br>
+8. simple middleware
+   <br>
+  9. add panic handler everywhere
+   <br>
+   10. Need A ui for error popup

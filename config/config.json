@@ -5,6 +5,11 @@
   },
   "app":{
     "port":"8080",
-    "uiTemplates":"client/ui/templates/"
+    "uiTemplates":"client/ui/templates/",
+    "db":"gms.sqlite"
+  },
+  "gms":{
+    "maxdays":7
+
   }
 }

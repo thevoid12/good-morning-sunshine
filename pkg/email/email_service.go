@@ -104,3 +104,8 @@ func SendEmail() {
 	fmt.Println("Email Sent to address: " + Recipient)
 	fmt.Println(result)
 }
+
+// EmailSendJob sends runs every minute to check if there is any mail to be sent, if the mail needs to be sent, then it picks it up and sends the email
+func EmailSendJob() {
+
+}
