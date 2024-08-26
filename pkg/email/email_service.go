@@ -4,6 +4,9 @@ package email
 
 import (
 	"fmt"
+	"log"
+	"net/smtp"
+	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -37,7 +40,7 @@ const (
 	CharSet = "UTF-8"
 )
 
-func SendEmail() {
+func SendEmailusingSES() {
 	// Create a new session in the us-west-2 region.
 	// Replace us-west-2 with the AWS Region you're using for Amazon SES.
 	sess, err := session.NewSession(&aws.Config{
@@ -105,7 +108,29 @@ func SendEmail() {
 	fmt.Println(result)
 }
 
-// EmailSendJob sends runs every minute to check if there is any mail to be sent, if the mail needs to be sent, then it picks it up and sends the email
-func EmailSendJob() {
+func SendEmailUsingSMTP() {
+	from := os.Getenv("FROM")
+	user := os.Getenv("FROM")
+	password := os.Getenv("GMS_GMAIL_PASS")
+
+	to := []string{
+		"example@gmail.com",
+	}
+
+	addr := "smtp.gmail.com:587"
+	host := "smtp.gmail.com"
+
+	msg := []byte(
+		"Subject:  good morning sunshine\r\n\r\n" +
+			"This is a trail mail by good morning sunshine\r\n")
+
+	auth := smtp.PlainAuth("", user, password, host)
+
+	err := smtp.SendMail(addr, auth, from, to, msg)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Email sent successfully")
 
 }

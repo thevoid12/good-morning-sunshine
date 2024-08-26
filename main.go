@@ -8,15 +8,18 @@ import (
 	logs "gms/pkg/logger"
 	"log"
 
+	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
 func main() {
+	err := godotenv.Load()
+	email.SendEmailUsingSMTP()
 	// email.SendEmail()
 	viper.SetConfigName("config")
 	viper.SetConfigType("json")
 	viper.AddConfigPath("config/") // path to look for the config file in
-	err := viper.ReadInConfig()
+	err = viper.ReadInConfig()
 	if err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// Config file not found; ignore error if desired
@@ -39,7 +42,7 @@ func main() {
 	ctx := context.Background()
 	ctx = logs.SetLoggerctx(ctx, l)
 
-	email.EmailSendJob()
+	//email.EmailSendJob()
 	route := routes.Initialize(ctx, l)
 	route.Run(":" + viper.GetString("app.port"))
 }

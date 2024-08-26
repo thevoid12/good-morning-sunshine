@@ -18,3 +18,5 @@
   9. add panic handler everywhere
    <br>
    10. Need A ui for error popup
+   <br>
+   11. need to handle maximum gmails which can be sent on a day. if it exeeds the limit then we shouldnt allow them to send mail as it is paid feature. same with ses(be under the daily limit)
