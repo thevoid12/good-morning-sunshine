@@ -3,8 +3,10 @@
 package email
 
 import (
+	"context"
 	"fmt"
-	"log"
+	emailmodel "gms/pkg/email/model"
+	logs "gms/pkg/logger"
 	"net/smtp"
 	"os"
 
@@ -12,6 +14,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ses"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -108,29 +111,31 @@ func SendEmailusingSES() {
 	fmt.Println(result)
 }
 
-func SendEmailUsingSMTP() {
+func SendEmailUsingSMTP(ctx context.Context, smtpStruct *emailmodel.SMTP) error {
+	l := logs.GetLoggerctx(ctx)
 	from := os.Getenv("FROM")
 	user := os.Getenv("FROM")
 	password := os.Getenv("GMS_GMAIL_PASS")
 
 	to := []string{
-		"example@gmail.com",
+		smtpStruct.ToAddress,
 	}
 
-	addr := "smtp.gmail.com:587"
-	host := "smtp.gmail.com"
+	addr := viper.GetString("mail.gmailsmtp.address")
+	host := viper.GetString("mail.gmailsmtp.host")
 
 	msg := []byte(
-		"Subject:  good morning sunshine\r\n\r\n" +
-			"This is a trail mail by good morning sunshine\r\n")
+		"Subject: " + smtpStruct.Subject + "\r\n\r\n" +
+			smtpStruct.EmailBody + "\r\n")
 
 	auth := smtp.PlainAuth("", user, password, host)
 
 	err := smtp.SendMail(addr, auth, from, to, msg)
 	if err != nil {
-		log.Fatal(err)
+		l.Sugar().Error("send mail to "+smtpStruct.ToAddress+" failed", err)
+		return err
 	}
 
-	fmt.Println("Email sent successfully")
-
+	l.Sugar().Info("Email Sent Successfully to " + smtpStruct.ToAddress)
+	return nil
 }

@@ -1,8 +1,8 @@
 package email
 
-type TemplateType string
+// type TemplateType string
 
-const (
-	GmSunshine TemplateType = "Good Morning Sunshine"
-	Thanks     TemplateType = "Thanks for subscribing"
-)
+// const (
+// 	GmSunshine TemplateType = "Good Morning Sunshine"
+// 	Thanks     TemplateType = "Thanks for subscribing"
+// )

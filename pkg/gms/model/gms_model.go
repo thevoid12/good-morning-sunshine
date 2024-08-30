@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type CreateEmailRecord struct {
+type EmailRecord struct {
 	ID         uuid.UUID
 	EmailID    string
 	ExpiryDate time.Time

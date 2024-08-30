@@ -1,15 +1,25 @@
 {
-  "logger":{
-    "filepath":"gms.logs",
-    "level":"debug"
+  "logger": {
+    "filepath": "gms.logs",
+    "level": "debug"
   },
-  "app":{
-    "port":"8080",
-    "uiTemplates":"client/ui/templates/",
-    "db":"gms.sqlite"
+  "app": {
+    "port": "8080",
+    "uiTemplates": "client/ui/templates/",
+    "db": "gms.sqlite"
   },
-  "gms":{
-    "maxdays":7
-
+  "mail": {
+    "gmailsmtp": {
+      "address": "smtp.gmail.com:587",
+      "host": "smtp.gmail.com"
+    }
+  },
+  "gms": {
+    "maxdays": 7,
+    "mailjobTimer": {
+      "hour": 6,
+      "minute": 0,
+      "second": 0
+    }
   }
 }

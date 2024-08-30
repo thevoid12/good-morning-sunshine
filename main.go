@@ -5,13 +5,10 @@ import (
 	"gms/client/routes"
 
 	//"gms/pkg/email"
-	"gms/pkg/gms"
-	"gms/pkg/gms/model"
+
 	logs "gms/pkg/logger"
 	"log"
-	"time"
 
-	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
@@ -46,14 +43,6 @@ func main() {
 	ctx := context.Background()
 	ctx = logs.SetLoggerctx(ctx, l)
 
-	gms.CreateEmailRecordTable(ctx, &model.CreateEmailRecord{
-		ID:         uuid.New(),
-		EmailID:    "testmail@gmail.com",
-		ExpiryDate: time.Now(),
-		CreatedOn:  time.Now(),
-		IsDeleted:  false,
-	})
-	//email.EmailSendJob()
 	route := routes.Initialize(ctx, l)
 	route.Run(":" + viper.GetString("app.port"))
 }

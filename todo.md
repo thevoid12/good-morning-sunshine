@@ -20,3 +20,14 @@
    10. Need A ui for error popup
    <br>
    11. need to handle maximum gmails which can be sent on a day. if it exeeds the limit then we shouldnt allow them to send mail as it is paid feature. same with ses(be under the daily limit)
+   <br>
+   12. UUID might loose randomness. so need to handle it with date
+      <br>
+   13. add panic handlers
+   <br>
+   14. hard delete record one month post expiry needs to be implemented
+      <br>
+   15. every user will receive a unique link that will route to the same ui page. only with that link. solve this using jwt token
+
+    <br>
+   16. help me in generating a landing page for good Morning sunshine. the page should have a button of a hen to transition between both dark and light mode and a cute animation to transition from dark and light mode. the dark mode's there is grey background with white text and the light mode's color palatte is white background with black text. the main important feature is a email text area in which they have to fill the email to get started with using good morning sunshine. Once a send email button is clicked a pop up needs to come stating that there email is sent successfully go check your email and spam folder. good morning sunshine is a website which sends you cute and fancy good morning or good night message based on their selection for a fixed number of days. the website should have a sleak nav bar and a footer with copyright, developer's info links with icon's
