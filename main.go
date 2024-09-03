@@ -38,8 +38,7 @@ func main() {
 	}
 
 	l.Sugar().Info("this is a test logger")
-	// err = errors.New("this is a generated error")
-	// 	l.Sugar().Errorf("this is a big error", err)
+
 	ctx := context.Background()
 	ctx = logs.SetLoggerctx(ctx, l)
 

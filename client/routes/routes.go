@@ -25,6 +25,7 @@ func Initialize(ctx context.Context, l *zap.Logger) (router *gin.Engine) {
 	rSecure.Use(middleware.ContextMiddleware(ctx))
 	rSecure.GET("/home", handlers.HomeHandler)
 	rSecure.POST("/checkmail", handlers.CheckMailHandler)
+	//rSecure.GET("/gms", handlers.MainPageHandler)
 
 	//auth group sets the context and calls auth middleware
 	rAuth := router.Group("/auth")

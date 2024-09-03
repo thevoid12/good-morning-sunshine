@@ -6,13 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Premium Subscription</title>
   <link href="/assets/css/output.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
 </head>
 
 <body class="bg-gray-100 p-4">
   <div class="max-w-4xl mx-auto space-y-6">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <!-- Days Remaining Card -->
-      <div class="bg-white p-6 rounded-lg shadow-md relative">
+      <div class="bg-white p-6 rounded-lg shadow-md relative dark:bg-gray-700">
         <button onclick="this.parentElement.style.display='none'"
           class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -24,7 +26,8 @@
       </div>
 
       <!-- Email Card -->
-      <div class="bg-white p-6 rounded-lg shadow-md relative">
+       <form>
+      <div class="bg-white p-6 rounded-lg shadow-md relative dark:bg-gray-700">
         <button onclick="this.parentElement.style.display='none'"
           class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -33,95 +36,38 @@
         </button>
         <h2 class="text-2xl font-bold mb-4">Email</h2>
         <input type="email" placeholder="Enter your email" class="w-full p-2 border border-gray-300 rounded mb-4">
-        <p class="text-gray-600">
+        <p class="text-gray-600 dark:text-white">
           Good Morning Sunshine is a platform that provides AI-generated templates and tools to help you start your day
           on a positive note.
         </p>
+        <button type="submit"
+        class="px-6 py-2 bg-gray-900 dark:bg-primary text-white rounded-md hover:bg-gray-800 dark:hover:bg-yellow-500 transition-colors duration-300">Lets Get Started</button>
       </div>
+    </form>
     </div>
 
     <!-- Premium Subscription Section -->
-    <div class="bg-white p-6 rounded-lg shadow-md">
-      <h2 class="text-2xl font-bold mb-6">Premium Subscription</h2>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <h3 class="text-xl font-semibold mb-4">AI-Generated Templates</h3>
-          <div class="grid grid-cols-2 gap-4">
-            <div class="bg-gray-100 p-4 rounded-lg text-center">
-              <div class="w-full h-32 bg-gray-200 rounded-md mb-2"></div>
-              <p class="font-semibold">Template 1</p>
-              <div class="flex justify-center space-x-2 mt-2">
-                <button class="p-1 bg-gray-200 rounded">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path
-                      d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                  </svg>
-                </button>
-                <button class="p-1 bg-gray-200 rounded">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd"
-                      d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 11-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15 13.586V12a1 1 0 011-1z"
-                      clip-rule="evenodd" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div class="bg-gray-100 p-4 rounded-lg text-center">
-              <div class="w-full h-32 bg-gray-200 rounded-md mb-2"></div>
-              <p class="font-semibold">Template 2</p>
-              <div class="flex justify-center space-x-2 mt-2">
-                <button class="p-1 bg-gray-200 rounded">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path
-                      d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                  </svg>
-                </button>
-                <button class="p-1 bg-gray-200 rounded">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd"
-                      d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 11-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15 13.586V12a1 1 0 011-1z"
-                      clip-rule="evenodd" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <h3 class="text-xl font-semibold mb-4">Subscription Duration</h3>
-          <select id="duration" class="w-full p-2 border border-gray-300 rounded mb-4">
-            <option value="">Select duration</option>
-            <option value="7">7 days</option>
-            <option value="14">14 days</option>
-            <option value="30">30 days</option>
-          </select>
-        </div>
-      </div>
-    </div>
   </div>
-  <!DOCTYPE html>
-  <html lang="en">
 
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Good Morning Sunshine</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   </head>
 
   <body class="bg-gray-100 min-h-screen flex flex-col">
     <div class="container mx-auto p-4 flex-grow">
-      <div class="bg-white rounded-lg shadow-md p-6 mb-6 relative">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6 relative dark:bg-gray-700 opacity-100">
         <button id="closeButton" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
           <i class="fas fa-times"></i>
         </button>
+        <h2 class="text-2xl font-bold mb-6">Premium Subscription</h2>
         <h2 class="text-2xl font-bold mb-4">AI-Generated Templates</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           <div class="bg-gray-100 p-4 rounded-lg">
             <div class="bg-gray-200 h-32 mb-2 rounded-md"></div>
-            <p class="font-semibold mb-2">Template 3</p>
+            <p class="font-semibold mb-2 dark:text-gray-800">Template 1</p>
             <div class="flex justify-between">
               <button class="text-gray-600 hover:text-gray-800">
                 <i class="fas fa-edit mr-1"></i> Edit
@@ -133,7 +79,7 @@
           </div>
           <div class="bg-gray-100 p-4 rounded-lg">
             <div class="bg-gray-200 h-32 mb-2 rounded-md"></div>
-            <p class="font-semibold mb-2">Template 4</p>
+            <h4 class="font-semibold mb-2 dark:text-black">Template 2</h4>
             <div class="flex justify-between">
               <button class="text-gray-600 hover:text-gray-800">
                 <i class="fas fa-edit mr-1"></i> Edit
@@ -144,9 +90,18 @@
             </div>
           </div>
         </div>
+
+          <h3 class="text-xl font-semibold mb-4 dark:text-gray-800">Subscription Duration</h3>
+          <select id="duration" class="w-full p-2 border border-gray-300 rounded mb-4">
+            <option value="" class="dark:text-gray-800">Select duration</option>
+            <option value="7" class="dark:text-gray-800">7 days</option>
+            <option value="14" class="dark:text-gray-800">14 days</option>
+            <option value="30" class="dark:text-gray-800">30 days</option>
+          </select>
+
       </div>
 
-      <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="bg-white rounded-lg shadow-md p-6 dark:bg-gray-700">
         <h2 class="text-2xl font-bold mb-4">Deactivate Good Morning Sunshine</h2>
         <div class="space-y-4">
           <div>
@@ -174,80 +129,6 @@
         </div>
       </div>
     </footer>
-    <!DOCTYPE html>
-    <html lang="en">
-
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Good Morning Sunshine</title>
-      <script src="https://cdn.tailwindcss.com"></script>
-      <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    </head>
-
-    <body class="bg-gray-100 min-h-screen flex flex-col transition-colors duration-300">
-      <div class="container mx-auto p-4 flex-grow">
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6 relative">
-          <button id="closeButton" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
-            <i class="fas fa-times"></i>
-          </button>
-          <h2 class="text-2xl font-bold mb-4">AI-Generated Templates</h2>
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            <div class="bg-gray-100 p-4 rounded-lg">
-              <div class="bg-gray-200 h-32 mb-2 rounded-md"></div>
-              <p class="font-semibold mb-2">Template 3</p>
-              <div class="flex justify-between">
-                <button class="text-gray-600 hover:text-gray-800">
-                  <i class="fas fa-edit mr-1"></i> Edit
-                </button>
-                <button class="text-gray-600 hover:text-gray-800 expand-btn">
-                  <i class="fas fa-expand-arrows-alt"></i>
-                </button>
-              </div>
-            </div>
-            <div class="bg-gray-100 p-4 rounded-lg">
-              <div class="bg-gray-200 h-32 mb-2 rounded-md"></div>
-              <p class="font-semibold mb-2">Template 4</p>
-              <div class="flex justify-between">
-                <button class="text-gray-600 hover:text-gray-800">
-                  <i class="fas fa-edit mr-1"></i> Edit
-                </button>
-                <button class="text-gray-600 hover:text-gray-800 expand-btn">
-                  <i class="fas fa-expand-arrows-alt"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-lg shadow-md p-6">
-          <h2 class="text-2xl font-bold mb-4">Deactivate Good Morning Sunshine</h2>
-          <div class="space-y-4">
-            <div>
-              <h3 class="text-xl font-semibold mb-2">Free Features</h3>
-              <button class="text-red-500 hover:text-red-700">
-                <i class="far fa-trash-alt mr-2"></i>Deactivate
-              </button>
-            </div>
-            <div>
-              <h3 class="text-xl font-semibold mb-2">Premium Subscription</h3>
-              <button class="text-red-500 hover:text-red-700">
-                <i class="far fa-trash-alt mr-2"></i>Deactivate
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <footer class="bg-gray-800 text-white py-4">
-        <div class="container mx-auto px-4 flex justify-between items-center">
-          <p>&copy; 2024 Good Morning Sunshine. All rights reserved.</p>
-          <div>
-            <a href="#" class="mr-4 hover:underline">Terms of Service</a>
-            <a href="#" class="hover:underline">Privacy Policy</a>
-          </div>
-        </div>
-      </footer>
 
       <!-- Modal -->
       <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
@@ -260,7 +141,7 @@
 
       <!-- Night Mode Toggle -->
       <button id="nightModeToggle"
-        class="fixed top-4 right-4 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white px-4 py-2 rounded-full">
+        class="fixed top-4 right-4 bg-gray-200 dark:bg-gray-700 text-gray-800  dark:text-yellow-400 px-4 py-2 rounded-full">
         <i class="fas fa-moon"></i> Night Mode
       </button>
 
