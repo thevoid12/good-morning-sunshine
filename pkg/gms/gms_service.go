@@ -4,11 +4,13 @@ package gms
 import (
 	"context"
 	"fmt"
+	"gms/pkg/auth"
 	dbpkg "gms/pkg/db"
 	"gms/pkg/email"
 	emailmodel "gms/pkg/email/model"
 	"gms/pkg/gms/model"
 	logs "gms/pkg/logger"
+	"net/url"
 	"time"
 
 	"github.com/spf13/viper"
@@ -63,7 +65,7 @@ func goodMorningSunshine(ctx context.Context) error {
 		//randomly pick a template for that day
 		randomIndex := rand.Intn(maxdays) // generate a random index between 1 and n
 		emailbody := email.GetEmailTemplate(randomIndex)
-		_ = email.SendEmailUsingSMTP(ctx, &emailmodel.SMTP{
+		_ = email.SendEmailUsingGmailSMTP(ctx, &emailmodel.SMTP{
 			ToAddress: ar.EmailID,
 			EmailBody: emailbody,
 			Subject:   "This is Your Message of the Day from team Good Moring Sunshine",
@@ -74,6 +76,55 @@ func goodMorningSunshine(ctx context.Context) error {
 	//Soft Delete expired records
 	err = SoftDeleteExpiredEmailIDs(ctx)
 	return err
+}
+
+func EmailMainPage(ctx context.Context, emailID string) error {
+
+	url, err := mainPageurl(ctx, emailID)
+	if err != nil {
+		return err
+	}
+	err = email.SendEmailUsingGmailSMTP(ctx, &emailmodel.SMTP{
+		ToAddress: emailID,
+		EmailBody: `<html>
+		<body>
+		Thank you for joining Good Morning Sunshine. We're delighted to have you on board. To begin sharing morning greetings with your chosen recipient, please use the secure link below:
+		<br>
+		 <a href="` + url + `">` + url + `</a>
+				</body>
+		</html>
+		`,
+		Subject: "Rise & Shine: Your Good Morning Sunshine Link Inside!",
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// mainPageurl creates a new jwt token with emailID wrapped into it and attaches the jwt with the url and sends the mail
+// This acts as a authentication to authorize only those users who has entered the main page url through their mail
+func mainPageurl(ctx context.Context, emailID string) (string, error) {
+	l := logs.GetLoggerctx(ctx)
+
+	jwtToken, err := auth.CreateJWTToken(emailID)
+	if err != nil {
+		l.Sugar().Errorf("creating a new jwt token failed", err)
+		return "", err
+	}
+	//attach this to the url
+	baseurl := viper.GetString("app.mailPageurl")
+	u, err := url.Parse(baseurl) //parses the url into URL structure
+	if err != nil {
+		l.Sugar().Errorf("error parsing base url", err)
+		return "", err
+	}
+	//adding a jwt query parameter
+	q := u.Query()
+	q.Add("tkn", jwtToken)  //tkn is jwt token(key)
+	u.RawQuery = q.Encode() //Encode encodes the values into “URL encoded” form ("bar=baz&foo=quux") sorted by key.
+	mailPageurl := u.String()
+	return mailPageurl, nil
 }
 
 /*******************************DATABASE *******************************************/

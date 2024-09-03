@@ -13,11 +13,19 @@ func Initialize(ctx context.Context, l *zap.Logger) (router *gin.Engine) {
 	l.Sugar().Info("Initializing logger")
 
 	router = gin.Default()
+	router.Use(gin.Recovery())
 
+	//secure group
 	rSecure := router.Group("/sec")
+
 	rSecure.Use(middleware.ContextMiddleware(ctx))
-	//TODO:create all other middleware's. set group middleware and chain them together
 	rSecure.GET("/home", handlers.HomeHandler)
 	rSecure.POST("/checkmail", handlers.CheckMailHandler)
+
+	//auth group sets the context and calls auth middleware
+	rAuth := router.Group("/auth")
+	rAuth.Use(middleware.ContextMiddleware(ctx), middleware.AuthMiddleware(ctx))
+	rAuth.GET("/gms", handlers.MainPageHandler)
+
 	return router
 }

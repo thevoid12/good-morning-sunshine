@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"fmt"
+	"gms/pkg/gms"
 	logs "gms/pkg/logger"
 	"html/template"
 	"path/filepath"
@@ -48,9 +50,9 @@ func CheckMailHandler(c *gin.Context) {
 		return
 	}
 	// email := c.Request.Form.Get("emailaddress")
-	email := c.PostForm("emailaddress")
+	emailID := c.PostForm("emailaddress")
 	cm := CheckMail{
-		Email: email,
+		Email: emailID,
 	}
 	validate := validator.New()
 	err = validate.Struct(cm)
@@ -60,6 +62,30 @@ func CheckMailHandler(c *gin.Context) {
 	}
 
 	//send a mail with the link of the website for him to access
+	err = gms.EmailMainPage(ctx, emailID)
+	if err != nil {
+		l.Sugar().Errorf("initial email send failed", err)
+		return
+	}
+	// Execute the template and write the output to the response
+	err = tmpl.Execute(c.Writer, nil)
+	if err != nil {
+		l.Sugar().Errorf("execute template failed", err)
+		return
+	}
+}
+
+func MainPageHandler(c *gin.Context) {
+	ctx := c.Request.Context()
+	l := logs.GetLoggerctx(ctx)
+
+	authtoken := c.Query("tkn")
+	fmt.Println(authtoken)
+	tmpl, err := template.ParseFiles(filepath.Join(viper.GetString("app.uiTemplates"), "mainpage.html"))
+	if err != nil {
+		l.Sugar().Errorf("parse template failed", err)
+		return
+	}
 
 	// Execute the template and write the output to the response
 	err = tmpl.Execute(c.Writer, nil)

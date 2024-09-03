@@ -10,5 +10,6 @@ func ContextMiddleware(ctx context.Context) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Attach the context to the request
 		c.Request = c.Request.WithContext(ctx)
+		c.Next()
 	}
 }

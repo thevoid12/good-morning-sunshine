@@ -27,7 +27,11 @@
    <br>
    14. hard delete record one month post expiry needs to be implemented
       <br>
-   15. every user will receive a unique link that will route to the same ui page. only with that link. solve this using jwt token
+   15. every user will receive a unique link that will route to the same ui page. only with that link. solve this using jwt token. send the initial emai id as well in the jwt. so that we can make sure a email  id can use this feature at max n times in a month  using ratelimit middleware
 
     <br>
    16. help me in generating a landing page for good Morning sunshine. the page should have a button of a hen to transition between both dark and light mode and a cute animation to transition from dark and light mode. the dark mode's there is grey background with white text and the light mode's color palatte is white background with black text. the main important feature is a email text area in which they have to fill the email to get started with using good morning sunshine. Once a send email button is clicked a pop up needs to come stating that there email is sent successfully go check your email and spam folder. good morning sunshine is a website which sends you cute and fancy good morning or good night message based on their selection for a fixed number of days. the website should have a sleak nav bar and a footer with copyright, developer's info links with icon's
+      <br>
+   17. should be able to display no of days remaining along with a premium feature to unlock mailing any days they want(max 30 days) + unlock ai generation
+      <br>
+   18. check if he already has a jwt token, if so return the same token

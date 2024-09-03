@@ -111,7 +111,7 @@ func SendEmailusingSES() {
 	fmt.Println(result)
 }
 
-func SendEmailUsingSMTP(ctx context.Context, smtpStruct *emailmodel.SMTP) error {
+func SendEmailUsingGmailSMTP(ctx context.Context, smtpStruct *emailmodel.SMTP) error {
 	l := logs.GetLoggerctx(ctx)
 	from := os.Getenv("FROM")
 	user := os.Getenv("FROM")
@@ -123,9 +123,10 @@ func SendEmailUsingSMTP(ctx context.Context, smtpStruct *emailmodel.SMTP) error 
 
 	addr := viper.GetString("mail.gmailsmtp.address")
 	host := viper.GetString("mail.gmailsmtp.host")
-
+	contentType := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 	msg := []byte(
-		"Subject: " + smtpStruct.Subject + "\r\n\r\n" +
+		"Subject: " + smtpStruct.Subject + "\r\n" +
+			contentType + "\r\n" +
 			smtpStruct.EmailBody + "\r\n")
 
 	auth := smtp.PlainAuth("", user, password, host)
