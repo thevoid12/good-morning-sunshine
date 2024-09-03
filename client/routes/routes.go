@@ -3,7 +3,9 @@ package routes
 import (
 	"context"
 	"gms/client/middleware"
+	assests "gms/client/ui/assets"
 	"gms/client/ui/handlers"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -14,6 +16,8 @@ func Initialize(ctx context.Context, l *zap.Logger) (router *gin.Engine) {
 
 	router = gin.Default()
 	router.Use(gin.Recovery())
+	//Assests and Tailwind
+	router.StaticFS("/assets", http.FS(assests.AssestFS))
 
 	//secure group
 	rSecure := router.Group("/sec")
