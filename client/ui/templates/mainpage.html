@@ -21,8 +21,10 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
+        <h1 class="text-2xl font-bold mb-4">Hello,</h1>
+        <h3 class="text-2xl font-bold mb-4">{{.EmailID}}</h3>
         <h2 class="text-2xl font-bold mb-4">Days Remaining</h2>
-        <p class="text-6xl font-bold">7</p>
+        <p class="text-6xl font-bold">{{.DaysRemaining}}</p>
       </div>
 
       <!-- Email Card -->
@@ -37,7 +39,7 @@
         <h2 class="text-2xl font-bold mb-4">Email</h2>
         <input type="email" placeholder="Enter your email" class="w-full p-2 border border-gray-300 rounded mb-4">
         <p class="text-gray-600 dark:text-white">
-          Good Morning Sunshine is a platform that provides AI-generated templates and tools to help you start your day
+          Good Morning Sunshine is a platform that provides Customized templates and tools to help you start your day
           on a positive note.
         </p>
         <button type="submit"

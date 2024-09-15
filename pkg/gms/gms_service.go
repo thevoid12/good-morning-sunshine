@@ -13,11 +13,12 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/spf13/viper"
 	"golang.org/x/exp/rand"
 )
 
-// EmailSendJob sends runs every minute to check if there is any mail to be sent, if the mail needs to be sent, then it picks it up and sends the email
+// GoodMrngSunshineJob sends runs every minute to check if there is any mail to be sent, if the mail needs to be sent, then it picks it up and sends the email
 func GoodMrngSunshineJob(ctx context.Context) {
 	l := logs.GetLoggerctx(ctx)
 
@@ -78,7 +79,50 @@ func goodMorningSunshine(ctx context.Context) error {
 	return err
 }
 
-func EmailMainPage(ctx context.Context, emailID string) error {
+// Once the user sign's up this function is called
+func MainPageEntry(ctx context.Context, emailID string) error {
+	l := logs.GetLoggerctx(ctx)
+	//create owner table if not exists
+	err := OwnerTable(ctx)
+	if err != nil {
+		return err
+	}
+
+	ownerRecord, err := GetOwnerRecordByEmailID(ctx, emailID)
+	if err != nil {
+		return err
+	}
+	if ownerRecord == nil { //creating for the first time
+		err = CreateOwnerRecord(ctx, &model.OwnerRecord{
+			ID:        uuid.New(),
+			EmailID:   emailID,
+			RateLimit: 0,
+		})
+		if err != nil {
+			return err
+		}
+	} else {
+		if ownerRecord.RateLimit >= 3 {
+			l.Sugar().Info("At max a user " + emailID + " can create 3 new records")
+			return fmt.Errorf("At max a user " + emailID + " can create 3 new records")
+		} else {
+			//update the rate limit count in db
+			err = UpdateOwnerRateLimit(ctx, emailID, ownerRecord.RateLimit+1)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	err = emailMainPage(ctx, emailID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func emailMainPage(ctx context.Context, emailID string) error {
 
 	url, err := mainPageurl(ctx, emailID)
 	if err != nil {
@@ -179,6 +223,125 @@ func EmailRecord(ctx context.Context, mailRecord *model.EmailRecord) error {
 	}
 
 	return nil
+}
+
+func OwnerTable(ctx context.Context) error {
+	l := logs.GetLoggerctx(ctx)
+
+	db, err := dbpkg.NewdbConnection()
+	if err != nil {
+		l.Sugar().Errorf("new db connection creation failed", err)
+		return err
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare(dbpkg.OWNER_SCHEMA)
+	if err != nil {
+		l.Sugar().Errorf("db prepare failed", err)
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec()
+	if err != nil {
+		l.Sugar().Errorf("owner table creation failed", err)
+		return err
+	}
+
+	return nil
+}
+
+func CreateOwnerRecord(ctx context.Context, mailRecord *model.OwnerRecord) error {
+	l := logs.GetLoggerctx(ctx)
+
+	db, err := dbpkg.NewdbConnection()
+	if err != nil {
+		l.Sugar().Errorf("new db connection creation failed", err)
+		return err
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare(dbpkg.CREATE_OWNER_QUERY)
+	if err != nil {
+		l.Sugar().Errorf("db prepare failed", err)
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(mailRecord.ID, mailRecord.EmailID, mailRecord.RateLimit)
+	if err != nil {
+		l.Sugar().Errorf("owner db record creation failed", err)
+		return err
+	}
+
+	return nil
+}
+
+func UpdateOwnerRateLimit(ctx context.Context, email_id string, rate_limit int) error {
+	l := logs.GetLoggerctx(ctx)
+	db, err := dbpkg.NewdbConnection()
+	if err != nil {
+		l.Sugar().Errorf("new db connection creation failed", err)
+		return err
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare(dbpkg.UPDATE_OWNER_RATE_LIMIT_QUERY)
+	if err != nil {
+		l.Sugar().Errorf("db prepare failed", err)
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Query(rate_limit, email_id)
+	if err != nil {
+		l.Sugar().Errorf("update owner rate limit failed", err)
+		return err
+	}
+
+	return nil
+}
+
+func GetOwnerRecordByEmailID(ctx context.Context, emailID string) (*model.OwnerRecord, error) {
+	l := logs.GetLoggerctx(ctx)
+	db, err := dbpkg.NewdbConnection()
+	if err != nil {
+		l.Sugar().Errorf("new db connection creation failed", err)
+		return nil, err
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare(dbpkg.GET_OWNER_DETAILS_BY_EMAILID_QUERY)
+	if err != nil {
+		l.Sugar().Errorf("db prepare failed", err)
+		return nil, err
+	}
+	defer stmt.Close()
+
+	dbRecords, err := stmt.Query(emailID)
+	if err != nil {
+		l.Sugar().Errorf("get owner record by emailID failed", err)
+		return nil, err
+	}
+	defer dbRecords.Close()
+
+	i := model.OwnerRecord{}
+
+	if err := dbRecords.Scan(
+		&i.ID,
+		&i.EmailID,
+		&i.RateLimit,
+	); err != nil {
+		return nil, err
+	}
+
+	if err := dbRecords.Close(); err != nil {
+		return nil, err
+	}
+	if err := dbRecords.Err(); err != nil {
+		return nil, err
+	}
+	return &i, nil
 }
 
 // ListActiveEmailIDs Lists all the email id's which are not expired and are in the mailing list

@@ -35,7 +35,7 @@ func CreateJWTToken(input string) (string, error) {
 func VerifyJWTToken(ctx context.Context, tokenString string) (*jwt.Token, error) {
 	l := logs.GetLoggerctx(ctx)
 
-	secretKey := []byte(os.Getenv("JWT_SECRET")) //TODO: read it from env
+	secretKey := []byte(os.Getenv("JWT_SECRET"))
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return secretKey, nil
 	})
@@ -66,5 +66,5 @@ func ExtractClaims(token *jwt.Token) (*JWTClaims, error) {
 		}, nil
 
 	}
-	return nil, fmt.Errorf("err")
+	return nil, fmt.Errorf("err extracting jwt token claims")
 }

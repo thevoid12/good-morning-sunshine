@@ -13,3 +13,9 @@ type EmailRecord struct {
 	CreatedOn  time.Time
 	IsDeleted  bool
 }
+
+type OwnerRecord struct {
+	ID        uuid.UUID
+	EmailID   string
+	RateLimit int
+}

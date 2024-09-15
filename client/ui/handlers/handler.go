@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"fmt"
+	"gms/pkg/auth"
 	"gms/pkg/gms"
 	logs "gms/pkg/logger"
 	"html/template"
@@ -14,6 +14,12 @@ import (
 
 type CheckMail struct {
 	Email string `json:"email" validate:"required,email`
+}
+type MainPage struct {
+	AuthToken     string
+	DaysRemaining int
+	IsExpired     bool
+	EmailID       string
 }
 
 func HomeHandler(c *gin.Context) {
@@ -62,7 +68,7 @@ func CheckMailHandler(c *gin.Context) {
 	}
 
 	//send a mail with the link of the website for him to access
-	err = gms.EmailMainPage(ctx, emailID)
+	err = gms.MainPageEntry(ctx, emailID)
 	if err != nil {
 		l.Sugar().Errorf("initial email send failed", err)
 		return
@@ -75,12 +81,27 @@ func CheckMailHandler(c *gin.Context) {
 	}
 }
 
+// initial load of the MainPage
 func MainPageHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	l := logs.GetLoggerctx(ctx)
 
 	authtoken := c.Query("tkn")
-	fmt.Println(authtoken)
+	token, err := auth.VerifyJWTToken(ctx, authtoken)
+	if err != nil {
+		return
+	}
+	tokenClaims, err := auth.ExtractClaims(token)
+	if err != nil {
+		return
+	}
+	emailID := tokenClaims.EmailID // this is the email id the user has signed up with
+	d := MainPage{
+		AuthToken:     authtoken,
+		DaysRemaining: 7,
+		IsExpired:     false,
+		EmailID:       emailID,
+	}
 	tmpl, err := template.ParseFiles(filepath.Join(viper.GetString("app.uiTemplates"), "mainpage.html"))
 	if err != nil {
 		l.Sugar().Errorf("parse template failed", err)
@@ -88,7 +109,7 @@ func MainPageHandler(c *gin.Context) {
 	}
 
 	// Execute the template and write the output to the response
-	err = tmpl.Execute(c.Writer, nil)
+	err = tmpl.Execute(c.Writer, d)
 	if err != nil {
 		l.Sugar().Errorf("execute template failed", err)
 		return
