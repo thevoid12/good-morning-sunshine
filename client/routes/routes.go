@@ -30,6 +30,7 @@ func Initialize(ctx context.Context, l *zap.Logger) (router *gin.Engine) {
 	rAuth := router.Group("/auth")
 	rAuth.Use(middleware.ContextMiddleware(ctx), middleware.AuthMiddleware(ctx))
 	rAuth.GET("/gms", handlers.MainPageHandler)
+	rAuth.POST("/gms/submit/:tkn", handlers.NewMailRecordHandler)
 
 	return router
 }

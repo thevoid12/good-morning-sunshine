@@ -13,9 +13,13 @@ func AuthMiddleware(ctx context.Context) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Attach the context to the request
 		tokenString := c.Query("tkn")
+
 		if tokenString == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "JWT is required"})
-			return
+			tokenString = c.Param("tkn")
+			if tokenString == "" {
+				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "JWT is required"})
+				return
+			}
 		}
 		_, err := auth.VerifyJWTToken(ctx, tokenString)
 		if err != nil {

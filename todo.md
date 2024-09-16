@@ -35,3 +35,5 @@
    17. should be able to display no of days remaining along with a premium feature to unlock mailing any days they want(max 30 days) + unlock ai generation
       <br>
    18. check if he already has a jwt token, if so return the same token
+   <br>
+   19. Error ui show (red for failure, green for success)-

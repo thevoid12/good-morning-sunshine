@@ -171,6 +171,20 @@ func mainPageurl(ctx context.Context, emailID string) (string, error) {
 	return mailPageurl, nil
 }
 
+func ListMainPage(ctx context.Context, emailID string) ([]*model.EmailRecord, error) {
+
+	err := EmailRecordTable(ctx)
+	if err != nil {
+		return nil, err
+	}
+	emailRecords, err := ListEmailRecordByOwnerMailID(ctx, emailID)
+	if err != nil {
+		return nil, err
+	}
+
+	return emailRecords, nil
+}
+
 /*******************************DATABASE *******************************************/
 
 func EmailRecordTable(ctx context.Context) error {
@@ -216,7 +230,7 @@ func EmailRecord(ctx context.Context, mailRecord *model.EmailRecord) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(mailRecord.ID, mailRecord.EmailID, mailRecord.ExpiryDate, mailRecord.CreatedOn, mailRecord.IsDeleted)
+	_, err = stmt.Exec(mailRecord.ID, mailRecord.EmailID, mailRecord.OwnerMailID, mailRecord.ExpiryDate, mailRecord.CreatedOn, mailRecord.IsDeleted)
 	if err != nil {
 		l.Sugar().Errorf("email record table creation failed", err)
 		return err
@@ -406,6 +420,7 @@ func ListActiveEmailIDs(ctx context.Context) ([]*model.EmailRecord, error) {
 		if err := dbRecords.Scan(
 			&i.ID,
 			&i.EmailID,
+			&i.OwnerMailID,
 			&i.ExpiryDate,
 			&i.ExpiryDate,
 			&i.CreatedOn,
@@ -414,6 +429,78 @@ func ListActiveEmailIDs(ctx context.Context) ([]*model.EmailRecord, error) {
 			l.Sugar().Errorf("scan records failed", err)
 			return nil, err
 		}
+		items = append(items, &i)
+	}
+
+	if err := dbRecords.Close(); err != nil {
+		l.Sugar().Errorf("db close failed", err)
+		return nil, err
+	}
+	if err := dbRecords.Err(); err != nil {
+		l.Sugar().Errorf("db record error", err)
+		return nil, err
+	}
+	return items, nil
+}
+
+// ListEmailRecordByOwnerMailID Lists all the email record for a owner mailID
+func ListEmailRecordByOwnerMailID(ctx context.Context, emailID string) ([]*model.EmailRecord, error) {
+	l := logs.GetLoggerctx(ctx)
+	db, err := dbpkg.NewdbConnection()
+	if err != nil {
+		l.Sugar().Errorf("new db connection creation failed", err)
+		return nil, err
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare(dbpkg.LIST_ALL_EMAIL_RECORD_FOR_A_OWNER)
+	if err != nil {
+		l.Sugar().Errorf("db prepare failed", err)
+		return nil, err
+	}
+	defer stmt.Close()
+
+	dbRecords, err := stmt.Query(emailID)
+	if err != nil {
+		l.Sugar().Errorf("ListEmailRecordByOwnerMailID failed", err)
+		return nil, err
+	}
+	defer dbRecords.Close()
+
+	items := []*model.EmailRecord{}
+	expiryDate := ""
+	createdOn := ""
+	for dbRecords.Next() {
+		var i model.EmailRecord
+		if err := dbRecords.Scan(
+			&i.ID,
+			&i.EmailID,
+			&i.OwnerMailID,
+			&expiryDate,
+			&createdOn,
+			&i.IsDeleted,
+		); err != nil {
+			l.Sugar().Errorf("scan records failed", err)
+			return nil, err
+		}
+		// Define the layout (format) of the time string
+		layout := "2006-01-02 15:04:05.999999-07:00"
+
+		// Parse the time string to time.Time object
+		ct, err := time.Parse(layout, createdOn)
+		if err != nil {
+			l.Sugar().Errorf("error parsing created on time", err)
+			return nil, err
+		}
+
+		ed, err := time.Parse(layout, expiryDate)
+		if err != nil {
+			l.Sugar().Errorf("error parsing updated on time", err)
+			return nil, err
+		}
+		i.CreatedOn = ct
+		i.ExpiryDate = ed
+
 		items = append(items, &i)
 	}
 
