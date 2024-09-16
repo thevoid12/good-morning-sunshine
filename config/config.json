@@ -7,7 +7,7 @@
     "port": "8080",
     "uiTemplates": "client/ui/templates/",
     "db": "gms.sqlite",
-    "mailPageurl": "http:localhost:7070/gms"
+    "mailPageurl": "http://localhost:8080/auth/gms"
   },
   "mail": {
     "gmailsmtp": {

@@ -58,11 +58,20 @@ func ExtractClaims(token *jwt.Token) (*JWTClaims, error) {
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if ok && token.Valid {
+		expDate := claims["exp"].(float64)
+		expseconds := int64(expDate)
+		expnanoseconds := int64((expDate - float64(expseconds)) * 1e9)
+
+		iatDate := claims["iat"].(float64)
+		iatseconds := int64(iatDate)
+		iatnanoseconds := int64((iatDate - float64(iatseconds)) * 1e9)
+
+		// Create time.Time object
 
 		return &JWTClaims{
 			EmailID:     claims["emailID"].(string),
-			ExpiryDate:  claims["exp"].(time.Time),
-			InitiatedAt: claims["iat"].(time.Time),
+			ExpiryDate:  time.Unix(expseconds, expnanoseconds),
+			InitiatedAt: time.Unix(iatseconds, iatnanoseconds),
 		}, nil
 
 	}

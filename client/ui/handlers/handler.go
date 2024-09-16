@@ -6,6 +6,7 @@ import (
 	logs "gms/pkg/logger"
 	"html/template"
 	"path/filepath"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -55,7 +56,7 @@ func CheckMailHandler(c *gin.Context) {
 		l.Sugar().Errorf("parse form failed", err)
 		return
 	}
-	// email := c.Request.Form.Get("emailaddress")
+
 	emailID := c.PostForm("emailaddress")
 	cm := CheckMail{
 		Email: emailID,
@@ -96,10 +97,14 @@ func MainPageHandler(c *gin.Context) {
 		return
 	}
 	emailID := tokenClaims.EmailID // this is the email id the user has signed up with
+	var exp bool
+	if tokenClaims.ExpiryDate.Before(time.Now()) {
+		exp = true
+	}
 	d := MainPage{
 		AuthToken:     authtoken,
-		DaysRemaining: 7,
-		IsExpired:     false,
+		DaysRemaining: 7, //TODO
+		IsExpired:     exp,
 		EmailID:       emailID,
 	}
 	tmpl, err := template.ParseFiles(filepath.Join(viper.GetString("app.uiTemplates"), "mainpage.html"))

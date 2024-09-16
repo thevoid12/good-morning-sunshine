@@ -96,7 +96,7 @@ func MainPageEntry(ctx context.Context, emailID string) error {
 		err = CreateOwnerRecord(ctx, &model.OwnerRecord{
 			ID:        uuid.New(),
 			EmailID:   emailID,
-			RateLimit: 0,
+			RateLimit: 1,
 		})
 		if err != nil {
 			return err
@@ -268,7 +268,7 @@ func CreateOwnerRecord(ctx context.Context, mailRecord *model.OwnerRecord) error
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(mailRecord.ID, mailRecord.EmailID, mailRecord.RateLimit)
+	_, err = stmt.Exec(mailRecord.ID, mailRecord.EmailID, mailRecord.RateLimit, time.Now(), time.Now(), false)
 	if err != nil {
 		l.Sugar().Errorf("owner db record creation failed", err)
 		return err
@@ -293,7 +293,7 @@ func UpdateOwnerRateLimit(ctx context.Context, email_id string, rate_limit int) 
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Query(rate_limit, email_id)
+	_, err = stmt.Exec(rate_limit, time.Now(), email_id)
 	if err != nil {
 		l.Sugar().Errorf("update owner rate limit failed", err)
 		return err
@@ -326,21 +326,53 @@ func GetOwnerRecordByEmailID(ctx context.Context, emailID string) (*model.OwnerR
 	defer dbRecords.Close()
 
 	i := model.OwnerRecord{}
-
-	if err := dbRecords.Scan(
-		&i.ID,
-		&i.EmailID,
-		&i.RateLimit,
-	); err != nil {
-		return nil, err
+	createdOn := ""
+	updatedOn := ""
+	for dbRecords.Next() {
+		if err := dbRecords.Scan(
+			&i.ID,
+			&i.EmailID,
+			&i.RateLimit,
+			&createdOn,
+			&updatedOn,
+			&i.IsDeleted,
+		); err != nil {
+			l.Sugar().Errorf("scan records failed", err)
+			return nil, err
+		}
 	}
 
 	if err := dbRecords.Close(); err != nil {
+		l.Sugar().Errorf("db close failed", err)
 		return nil, err
 	}
 	if err := dbRecords.Err(); err != nil {
+		l.Sugar().Errorf("error in db records", err)
 		return nil, err
 	}
+
+	if i.ID == uuid.Nil && i.EmailID == "" && i.RateLimit == 0 { // there was no record
+		return nil, nil
+	}
+
+	// Define the layout (format) of the time string
+	layout := "2006-01-02 15:04:05.999999-07:00"
+
+	// Parse the time string to time.Time object
+	ct, err := time.Parse(layout, createdOn)
+	if err != nil {
+		l.Sugar().Errorf("error parsing created on time", err)
+		return nil, err
+	}
+
+	ut, err := time.Parse(layout, updatedOn)
+	if err != nil {
+		l.Sugar().Errorf("error parsing updated on time", err)
+		return nil, err
+	}
+	i.CreatedOn = ct
+	i.UpdatedOn = ut
+
 	return &i, nil
 }
 
@@ -379,15 +411,18 @@ func ListActiveEmailIDs(ctx context.Context) ([]*model.EmailRecord, error) {
 			&i.CreatedOn,
 			&i.IsDeleted,
 		); err != nil {
+			l.Sugar().Errorf("scan records failed", err)
 			return nil, err
 		}
 		items = append(items, &i)
 	}
 
 	if err := dbRecords.Close(); err != nil {
+		l.Sugar().Errorf("db close failed", err)
 		return nil, err
 	}
 	if err := dbRecords.Err(); err != nil {
+		l.Sugar().Errorf("db record error", err)
 		return nil, err
 	}
 	return items, nil
