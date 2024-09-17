@@ -31,6 +31,6 @@ func Initialize(ctx context.Context, l *zap.Logger) (router *gin.Engine) {
 	rAuth.Use(middleware.ContextMiddleware(ctx), middleware.AuthMiddleware(ctx))
 	rAuth.GET("/gms", handlers.MainPageHandler)
 	rAuth.POST("/gms/submit/:tkn", handlers.NewMailRecordHandler)
-
+	rAuth.POST("/gms/deactivate/:id/:tkn", handlers.DeactivateRecordHandler)
 	return router
 }

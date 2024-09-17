@@ -53,11 +53,6 @@
                     <input type="email" id="newEmail" name="emailaddress" placeholder="Enter email" required class="w-full p-2 border rounded">
                     <button type="submit" class="w-full bg-black text-white p-2 rounded hover:bg-gray-800">Add Email</button>
                 </form>
-                <!-- <h2 class="text-xl font-bold mt-6 mb-4">Send Good Morning Email</h2>
-                <form id="sendEmailForm" class="space-y-2">
-                    <textarea id="emailContent" rows="4" placeholder="Enter your good morning message" class="w-full p-2 border rounded"></textarea>
-                    <button type="submit" class="w-full bg-black text-white p-2 rounded hover:bg-gray-800">Send Emails</button>
-                </form> -->
             </div>
         </div>
     </main>
@@ -86,22 +81,24 @@
                             <p class="text-sm text-gray-600">Days Remaining</p>
                             <p class="text-3xl font-bold">${email.daysRemaining}</p>
                         </div>
-                        <button onclick="toggleActive(${index})" class="px-3 py-1 rounded ${email.active ? 'bg-black text-white' : 'bg-gray-300 text-black'} text-sm">
+                        <form action="gms/deactivate/${email.recordID}/{{.AuthToken}}" method="post">
+                        <button type="submit" class="px-3 py-1 rounded ${email.active ? 'bg-black text-white' : 'bg-gray-300 text-black'} text-sm">
                             ${email.active ? 'Deactivate' : 'Activate'}
                         </button>
+                        </form>
                     </div>
                 `;
                 emailList.appendChild(emailDiv);
             });
         }
 
-        function addEmail(email) {
-            emails.push({ address: email, daysRemaining: 7, active: true });
-            renderEmails();
-        }
-
-        function toggleActive(index) {
-            emails[index].active = !emails[index].active;
+        function addEmail(email, daysRemaining, isactive, recordID) {
+            emails.push({ 
+                address: email, 
+                daysRemaining: daysRemaining, 
+                active: isactive === "true", 
+                recordID: recordID
+            });
             renderEmails();
         }
 
@@ -112,28 +109,17 @@
 
         document.getElementById('addEmailForm').addEventListener('submit', (e) => {
             const newEmail = document.getElementById('newEmail').value;
-            addEmail(newEmail);
-             document.getElementById('newEmail').value = '';
+            addEmail(newEmail, 7, "true", "");
+            document.getElementById('newEmail').value = '';
         });
-
-        // document.getElementById('sendEmailForm').addEventListener('submit', (e) => {
-        //     e.preventDefault();
-        //     const message = document.getElementById('emailContent').value;
-        //     const activeEmails = emails.filter(email => email.active).map(email => email.address);
-        //     alert(`Sending email to: ${activeEmails.join(', ')}\n\nMessage: ${message}`);
-        //     document.getElementById('emailContent').value = '';
-        // });
 
         document.getElementById('nightModeToggle').addEventListener('change', () => {
             document.body.classList.toggle('dark');
         });
 
         {{range .EmailMeta}}
-        addEmail("{{.EmailID}}")
+        addEmail("{{.EmailID}}", "{{.DaysRemaining}}", "{{not .IsExpired}}", "{{.RecordID}}")
         {{end}}
-        // addEmail('iamvinod2001@gmail.com');
-        // addEmail('ubappu2001@gmail.com');
-        // addEmail('abcd@gmail.com');
     </script>
 </body>
 </html>

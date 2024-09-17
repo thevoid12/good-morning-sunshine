@@ -532,7 +532,7 @@ func SoftDeleteExpiredEmailIDs(ctx context.Context) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Query(time.Now())
+	_, err = stmt.Exec(time.Now())
 	if err != nil {
 		l.Sugar().Errorf("soft delete expired email record failed", err)
 		return err
@@ -556,9 +556,34 @@ func HardDeleteExpiredEmailIDs(ctx context.Context, thresholdTime time.Time) err
 		return err
 	}
 
-	_, err = stmt.Query(thresholdTime)
+	_, err = stmt.Exec(thresholdTime)
 	if err != nil {
 		l.Sugar().Errorf("Hard delete expired email id's failed", err)
+		return err
+	}
+
+	return nil
+}
+
+func SoftDeleteRecordsByID(ctx context.Context, recordID string) error {
+	l := logs.GetLoggerctx(ctx)
+	db, err := dbpkg.NewdbConnection()
+	if err != nil {
+		l.Sugar().Errorf("new db connection creation failed", err)
+		return err
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare(dbpkg.SOFT_DELETE_RECORDS_BY_ID)
+	if err != nil {
+		l.Sugar().Errorf("db prepare failed", err)
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(recordID)
+	if err != nil {
+		l.Sugar().Errorf("soft delete record by record id failed", err)
 		return err
 	}
 

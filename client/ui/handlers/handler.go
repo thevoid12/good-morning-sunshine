@@ -25,6 +25,7 @@ type MainPage struct {
 }
 
 type EmailMeta struct {
+	RecordID      uuid.UUID
 	EmailID       string
 	IsExpired     bool
 	DaysRemaining int
@@ -118,7 +119,8 @@ func MainPageHandler(c *gin.Context) {
 		EmailMeta: []*EmailMeta{},
 	}
 	for _, er := range emailRecords {
-		if er.ExpiryDate.Before(time.Now()) {
+		exp = false
+		if er.ExpiryDate.Before(time.Now()) || er.IsDeleted {
 			exp = true
 		}
 		daysRem := 0
@@ -130,6 +132,7 @@ func MainPageHandler(c *gin.Context) {
 			daysRem = int(duration.Hours() / 24)
 		}
 		d.EmailMeta = append(d.EmailMeta, &EmailMeta{
+			RecordID:      er.ID,
 			EmailID:       er.EmailID,
 			IsExpired:     exp,
 			DaysRemaining: daysRem,
@@ -149,8 +152,7 @@ func MainPageHandler(c *gin.Context) {
 	}
 }
 
-//Create a new email record
-
+// Create a new email record
 func NewMailRecordHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	l := logs.GetLoggerctx(ctx)
@@ -210,9 +212,10 @@ func NewMailRecordHandler(c *gin.Context) {
 		AuthToken: authtoken,
 		EmailMeta: []*EmailMeta{},
 	}
-	var exp bool
+
 	for _, er := range emailRecords {
-		if er.ExpiryDate.Before(time.Now()) {
+		exp := false
+		if er.ExpiryDate.Before(time.Now()) || er.IsDeleted {
 			exp = true
 		}
 		daysRem := 0
@@ -224,6 +227,7 @@ func NewMailRecordHandler(c *gin.Context) {
 			daysRem = int(duration.Hours() / 24)
 		}
 		d.EmailMeta = append(d.EmailMeta, &EmailMeta{
+			RecordID:      er.ID,
 			EmailID:       er.EmailID,
 			IsExpired:     exp,
 			DaysRemaining: daysRem,
@@ -241,4 +245,69 @@ func NewMailRecordHandler(c *gin.Context) {
 		l.Sugar().Errorf("execute template failed", err)
 		return
 	}
+}
+
+func DeactivateRecordHandler(c *gin.Context) {
+	ctx := c.Request.Context()
+	l := logs.GetLoggerctx(ctx)
+
+	recordID := c.Param("id")
+	authtoken := c.Param("tkn")
+	token, err := auth.VerifyJWTToken(ctx, authtoken)
+	if err != nil {
+		return
+	}
+	tokenClaims, err := auth.ExtractClaims(token)
+	if err != nil {
+		return
+	}
+	ownerMailID := tokenClaims.EmailID // this is the email id the user has signed up with
+	err = gms.SoftDeleteRecordsByID(ctx, recordID)
+	if err != nil {
+		return
+	}
+
+	emailRecords, err := gms.ListMainPage(ctx, ownerMailID)
+	if err != nil {
+		return
+	}
+
+	d := MainPage{
+		AuthToken: authtoken,
+		EmailMeta: []*EmailMeta{},
+	}
+
+	for _, er := range emailRecords {
+		exp := false
+		if er.ExpiryDate.Before(time.Now()) || er.IsDeleted {
+			exp = true
+		}
+		daysRem := 0
+		if !exp {
+
+			duration := time.Until(er.ExpiryDate)
+
+			// Convert the duration to days
+			daysRem = int(duration.Hours() / 24)
+		}
+		d.EmailMeta = append(d.EmailMeta, &EmailMeta{
+			RecordID:      er.ID,
+			EmailID:       er.EmailID,
+			IsExpired:     exp,
+			DaysRemaining: daysRem,
+		})
+	}
+	tmpl, err := template.ParseFiles(filepath.Join(viper.GetString("app.uiTemplates"), "mainpage.html"))
+	if err != nil {
+		l.Sugar().Errorf("parse template failed", err)
+		return
+	}
+
+	// Execute the template and write the output to the response
+	err = tmpl.Execute(c.Writer, d)
+	if err != nil {
+		l.Sugar().Errorf("execute template failed", err)
+		return
+	}
+
 }
