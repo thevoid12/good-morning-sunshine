@@ -16,7 +16,7 @@
     }
   },
   "gms": {
-    "maxdays": 7,
+    "maxdays": 50,
     "mailjobTimer": {
       "hour": 6,
       "minute": 0,

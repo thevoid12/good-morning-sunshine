@@ -11,6 +11,7 @@ import (
 	"gms/pkg/gms/model"
 	logs "gms/pkg/logger"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -56,20 +57,63 @@ func GoodMrngSunshineJob(ctx context.Context) {
 
 func goodMorningSunshine(ctx context.Context) error {
 	maxdays := viper.GetInt("gms.maxdays")
-
+	l := logs.GetLoggerctx(ctx)
 	//send mail to non expired mail ID's
 	activeRecords, err := ListActiveEmailIDs(ctx)
 	if err != nil {
 		return err
 	}
 	for _, ar := range activeRecords {
-		//randomly pick a template for that day
-		randomIndex := rand.Intn(maxdays) // generate a random index between 1 and n
+		randmap := make(map[int64]bool)
+		temp := ""
+		for _, rn := range ar.RandomNumbers {
+			if rn == ',' {
+				num, err := strconv.ParseInt(temp, 10, 64) // base 10 and 64-bit integer
+				if err != nil {
+					l.Sugar().Errorf("error converting string to int", err)
+					return err
+				}
+				randmap[num] = true
+				temp = ""
+			} else {
+				temp += string(rn)
+			}
+		}
+
+		if len(temp) > 0 {
+			num, err := strconv.ParseInt(temp, 10, 64) // base 10 and 64-bit integer
+			if err != nil {
+				l.Sugar().Errorf("error converting string to int", err)
+				return err
+			}
+			randmap[num] = true
+			temp = ""
+		}
+
+		//randomly pick a template for that day that index shouldnt be used before
+		var randomIndex int64
+		for {
+			randomIndex = int64(rand.Intn(maxdays)) // generate a random index between 1 and n
+			_, ok := randmap[randomIndex]
+			if !ok {
+				break
+			}
+		}
+		if ar.RandomNumbers == "" {
+			ar.RandomNumbers += fmt.Sprintf("%d", randomIndex)
+		} else {
+			ar.RandomNumbers += "," + fmt.Sprintf("%d", randomIndex)
+		}
+		err = UpdateEmailRecRandNumber(ctx, ar.ID, ar.RandomNumbers)
+		if err != nil {
+			continue
+		}
+
 		emailbody := email.GetEmailTemplate(randomIndex)
 		_ = email.SendEmailUsingGmailSMTP(ctx, &emailmodel.SMTP{
 			ToAddress: ar.EmailID,
 			EmailBody: emailbody,
-			Subject:   "This is Your Message of the Day from team Good Moring Sunshine",
+			Subject:   "Your Daily Dose of Sunshine from Good Morning Sunshine",
 		})
 
 	}
@@ -230,9 +274,34 @@ func EmailRecord(ctx context.Context, mailRecord *model.EmailRecord) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(mailRecord.ID, mailRecord.EmailID, mailRecord.OwnerMailID, mailRecord.ExpiryDate, mailRecord.CreatedOn, mailRecord.IsDeleted)
+	_, err = stmt.Exec(mailRecord.ID, mailRecord.EmailID, mailRecord.OwnerMailID, mailRecord.ExpiryDate, "", mailRecord.CreatedOn, mailRecord.IsDeleted)
 	if err != nil {
 		l.Sugar().Errorf("email record table creation failed", err)
+		return err
+	}
+
+	return nil
+}
+
+func UpdateEmailRecRandNumber(ctx context.Context, id uuid.UUID, randstring string) error {
+	l := logs.GetLoggerctx(ctx)
+	db, err := dbpkg.NewdbConnection()
+	if err != nil {
+		l.Sugar().Errorf("new db connection creation failed", err)
+		return err
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare(dbpkg.UPDATE_EMAIL_RECORD_RANDNUM_QUERY)
+	if err != nil {
+		l.Sugar().Errorf("db prepare failed", err)
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(randstring, id)
+	if err != nil {
+		l.Sugar().Errorf("update email record random number string failed", err)
 		return err
 	}
 
@@ -424,6 +493,7 @@ func ListActiveEmailIDs(ctx context.Context) ([]*model.EmailRecord, error) {
 			&i.EmailID,
 			&i.OwnerMailID,
 			&expiryDate,
+			&i.RandomNumbers,
 			&createdOn,
 			&i.IsDeleted,
 		); err != nil {
@@ -496,6 +566,7 @@ func ListEmailRecordByOwnerMailID(ctx context.Context, emailID string) ([]*model
 			&i.EmailID,
 			&i.OwnerMailID,
 			&expiryDate,
+			&i.RandomNumbers,
 			&createdOn,
 			&i.IsDeleted,
 		); err != nil {

@@ -7,12 +7,13 @@ import (
 )
 
 type EmailRecord struct {
-	ID          uuid.UUID
-	EmailID     string
-	OwnerMailID string
-	ExpiryDate  time.Time
-	CreatedOn   time.Time
-	IsDeleted   bool
+	ID            uuid.UUID
+	EmailID       string
+	OwnerMailID   string
+	ExpiryDate    time.Time
+	RandomNumbers string // the random number days which are used to send good morning msgs. this is stored to make sure that rand doesnt generate the same number again and again
+	CreatedOn     time.Time
+	IsDeleted     bool
 }
 
 type OwnerRecord struct {
