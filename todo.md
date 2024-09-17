@@ -22,3 +22,6 @@
 - [ ] Error UI show (red for failure, green for success)
 - [ ] Need to take care of different time zones
 - [ ] fix night mode in main page
+- [ ] validate recordid from ui
+- [ ] - [ ] www. gms.com should readirect to /sec/home
+- [ ] 
