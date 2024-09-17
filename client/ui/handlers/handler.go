@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"gms/pkg/auth"
 	"gms/pkg/gms"
 	"gms/pkg/gms/model"
@@ -129,7 +128,7 @@ func MainPageHandler(c *gin.Context) {
 			duration := time.Until(er.ExpiryDate)
 
 			// Convert the duration to days
-			daysRem = int(duration.Hours() / 24)
+			daysRem = int(duration.Hours()/24) + 1
 		}
 		d.EmailMeta = append(d.EmailMeta, &EmailMeta{
 			RecordID:      er.ID,
@@ -164,8 +163,7 @@ func NewMailRecordHandler(c *gin.Context) {
 	}
 	emailID := c.PostForm("emailaddress")
 	if emailID == "" {
-		fmt.Println("Email field is empty!")
-		l.Sugar().Errorf("email cannot be empty")
+		l.Sugar().Errorf("email field cannot be empty")
 		return
 	}
 
@@ -224,7 +222,7 @@ func NewMailRecordHandler(c *gin.Context) {
 			duration := time.Until(er.ExpiryDate)
 
 			// Convert the duration to days
-			daysRem = int(duration.Hours() / 24)
+			daysRem = int(duration.Hours()/24) + 1
 		}
 		d.EmailMeta = append(d.EmailMeta, &EmailMeta{
 			RecordID:      er.ID,
@@ -288,7 +286,7 @@ func DeactivateRecordHandler(c *gin.Context) {
 			duration := time.Until(er.ExpiryDate)
 
 			// Convert the duration to days
-			daysRem = int(duration.Hours() / 24)
+			daysRem = int(duration.Hours()/24) + 1
 		}
 		d.EmailMeta = append(d.EmailMeta, &EmailMeta{
 			RecordID:      er.ID,

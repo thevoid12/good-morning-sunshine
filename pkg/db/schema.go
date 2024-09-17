@@ -9,7 +9,7 @@ const (
 	HARD_DELETE_RECORD_QUERY          = "DELETE FROM email_record WHERE expiry_date< ?;"
 	SOFT_DELETE_EXPIRED_RECORD_QUERY  = "UPDATE email_record SET is_deleted = true WHERE expiry_date< ?;"
 	SOFT_DELETE_RECORDS_BY_ID         = "UPDATE email_record SET is_deleted = true WHERE ID= ?;"
-	LIST_ACTIVE_EMAIL_RECORD_QUERY    = "SELECT * FROM email_record WHERE expiry_date< ? AND is_deleted=false;"
+	LIST_ACTIVE_EMAIL_RECORD_QUERY    = "SELECT * FROM email_record WHERE expiry_date>? AND is_deleted=false;"
 	LIST_ALL_EMAIL_RECORD_FOR_A_OWNER = "SELECT * FROM email_record WHERE owner_mail = ?;"
 
 	CREATE_OWNER_QUERY                 = "INSERT OR REPLACE INTO owner(id,email_id,rate_limit,created_on,updated_on,is_deleted) VALUES (?,?,?,?,?,?);"

@@ -18,7 +18,7 @@ import (
 	"golang.org/x/exp/rand"
 )
 
-// GoodMrngSunshineJob sends runs every minute to check if there is any mail to be sent, if the mail needs to be sent, then it picks it up and sends the email
+// GoodMrngSunshineJob sends runs  once in a day to check if there is any mail to be sent, if the mail needs to be sent, then it picks it up and sends the email
 func GoodMrngSunshineJob(ctx context.Context) {
 	l := logs.GetLoggerctx(ctx)
 
@@ -417,18 +417,37 @@ func ListActiveEmailIDs(ctx context.Context) ([]*model.EmailRecord, error) {
 	items := []*model.EmailRecord{}
 	for dbRecords.Next() {
 		var i model.EmailRecord
+		expiryDate := ""
+		createdOn := ""
 		if err := dbRecords.Scan(
 			&i.ID,
 			&i.EmailID,
 			&i.OwnerMailID,
-			&i.ExpiryDate,
-			&i.ExpiryDate,
-			&i.CreatedOn,
+			&expiryDate,
+			&createdOn,
 			&i.IsDeleted,
 		); err != nil {
 			l.Sugar().Errorf("scan records failed", err)
 			return nil, err
 		}
+		// Define the layout (format) of the time string
+		layout := "2006-01-02 15:04:05.999999-07:00"
+
+		// Parse the time string to time.Time object
+		ct, err := time.Parse(layout, createdOn)
+		if err != nil {
+			l.Sugar().Errorf("error parsing created on time", err)
+			return nil, err
+		}
+
+		ed, err := time.Parse(layout, expiryDate)
+		if err != nil {
+			l.Sugar().Errorf("error parsing updated on time", err)
+			return nil, err
+		}
+		i.CreatedOn = ct
+		i.ExpiryDate = ed
+
 		items = append(items, &i)
 	}
 

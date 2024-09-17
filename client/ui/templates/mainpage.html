@@ -107,11 +107,12 @@
             renderEmails();
         }
 
-        document.getElementById('addEmailForm').addEventListener('submit', (e) => {
-            const newEmail = document.getElementById('newEmail').value;
-            addEmail(newEmail, 7, "true", "");
-            document.getElementById('newEmail').value = '';
-        });
+        // document.getElementById('addEmailForm').addEventListener('submit', (e) => {
+        //     e.preventDefault()
+        //     const newEmail = document.getElementById('newEmail').value;
+        //     addEmail(newEmail, 7, "true", "");
+        //     document.getElementById('newEmail').value = '';
+        // });
 
         document.getElementById('nightModeToggle').addEventListener('change', () => {
             document.body.classList.toggle('dark');

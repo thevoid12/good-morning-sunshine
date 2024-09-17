@@ -6,6 +6,7 @@ import (
 
 	//"gms/pkg/email"
 
+	"gms/pkg/gms"
 	logs "gms/pkg/logger"
 	"log"
 
@@ -15,11 +16,10 @@ import (
 
 func main() {
 	err := godotenv.Load()
-	//email.SendEmailUsingSMTP()
-	// email.SendEmail()
 	viper.SetConfigName("config")
 	viper.SetConfigType("json")
 	viper.AddConfigPath("config/") // path to look for the config file in
+
 	err = viper.ReadInConfig()
 	if err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
@@ -41,6 +41,8 @@ func main() {
 
 	ctx := context.Background()
 	ctx = logs.SetLoggerctx(ctx, l)
+
+	go gms.GoodMrngSunshineJob(ctx) //a go routine to run sending mail job forever
 
 	route := routes.Initialize(ctx, l)
 	route.Run(":" + viper.GetString("app.port"))
