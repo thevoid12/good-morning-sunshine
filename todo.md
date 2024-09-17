@@ -21,3 +21,4 @@
 - [ ] Check if the user already has a JWT token; if so, return the same token
 - [ ] Error UI show (red for failure, green for success)
 - [ ] Need to take care of different time zones
+- [ ] fix night mode in main page
