@@ -49,7 +49,7 @@
             
             <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
                 <h2 class="text-xl font-bold mb-4">Add New Email</h2>
-                <form id="addEmailForm" class="space-y-2" action="gms/submit/{{.AuthToken}}" method="post">
+                <form id="addEmailForm" class="space-y-2" action="/auth/gms/submit/{{.AuthToken}}" method="post">
                     <input type="email" id="newEmail" name="emailaddress" placeholder="Enter email" required class="w-full p-2 border rounded">
                     <button type="submit" class="w-full bg-black text-white p-2 rounded hover:bg-gray-800">Add Email</button>
                 </form>
@@ -63,7 +63,7 @@
 
     <script>
         let emails = [];
-
+            const tkn = "{{.AuthToken}}"
         function renderEmails() {
             const emailList = document.getElementById('emailList');
             emailList.innerHTML = '';
@@ -81,7 +81,7 @@
                             <p class="text-sm text-gray-600">Days Remaining</p>
                             <p class="text-3xl font-bold">${email.daysRemaining}</p>
                         </div>
-                        <form action="gms/deactivate/${email.recordID}/{{.AuthToken}}" method="post">
+                        <form action="/auth/gms/deactivate/${email.recordID}/${tkn}" method="post">
                         <button type="submit" class="px-3 py-1 rounded ${email.active ? 'bg-black text-white' : 'bg-gray-300 text-black'} text-sm">
                             ${email.active ? 'Deactivate' : 'Activate'}
                         </button>

@@ -18,6 +18,10 @@ import (
 type CheckMail struct {
 	Email string `json:"email" validate:"required,email`
 }
+type DeactivateRequest struct {
+	RecordID string `validate:"required,uuid"`
+}
+
 type MainPage struct {
 	AuthToken string
 	EmailMeta []*EmailMeta
@@ -250,6 +254,16 @@ func DeactivateRecordHandler(c *gin.Context) {
 	l := logs.GetLoggerctx(ctx)
 
 	recordID := c.Param("id")
+	req := DeactivateRequest{
+		RecordID: recordID,
+	}
+
+	validate := validator.New()
+	err := validate.Struct(req)
+	if err != nil {
+		l.Sugar().Errorf("the entered record id is not valid", err)
+		return
+	}
 	authtoken := c.Param("tkn")
 	token, err := auth.VerifyJWTToken(ctx, authtoken)
 	if err != nil {

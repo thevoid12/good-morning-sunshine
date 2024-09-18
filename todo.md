@@ -24,4 +24,4 @@
 - [ ] fix night mode in main page
 - [ ] validate recordid from ui
 - [ ] - [ ] www. gms.com should readirect to /sec/home
-- [ ] 
+- [ ] Activate deactivated main id's
