@@ -31,7 +31,13 @@ func Initialize(ctx context.Context, l *zap.Logger) (router *gin.Engine) {
 	rAuth := router.Group("/auth")
 	rAuth.Use(middleware.ContextMiddleware(ctx), middleware.AuthMiddleware(ctx))
 	rAuth.GET("/gms", handlers.MainPageHandler)
-	rAuth.POST("/gms/submit/:tkn", handlers.NewMailRecordHandler)
-	rAuth.POST("/gms/deactivate/:id/:tkn", handlers.DeactivateRecordHandler)
+	rAuth.POST("/gms/submit", handlers.NewMailRecordHandler)
+
+	rAuth.POST("/gms/deactivate/:id", handlers.DeactivateRecordHandler)
+
+	for _, route := range router.Routes() {
+		l.Sugar().Infof("Route: %s %s", route.Method, route.Path)
+}
+
 	return router
 }

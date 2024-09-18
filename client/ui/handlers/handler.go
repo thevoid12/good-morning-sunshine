@@ -171,7 +171,7 @@ func NewMailRecordHandler(c *gin.Context) {
 		return
 	}
 
-	authtoken := c.Param("tkn")
+	authtoken := c.Query("tkn")
 	token, err := auth.VerifyJWTToken(ctx, authtoken)
 	if err != nil {
 		return
@@ -264,7 +264,7 @@ func DeactivateRecordHandler(c *gin.Context) {
 		l.Sugar().Errorf("the entered record id is not valid", err)
 		return
 	}
-	authtoken := c.Param("tkn")
+		authtoken := c.Query("tkn")
 	token, err := auth.VerifyJWTToken(ctx, authtoken)
 	if err != nil {
 		return
