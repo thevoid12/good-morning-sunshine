@@ -23,5 +23,7 @@
 - [ ] Need to take care of different time zones
 - [ ] fix night mode in main page
 - [ ] validate recordid from ui
-- [ ] - [ ] www. gms.com should readirect to /sec/home
+- [ ] www. gms.com should redirect to /sec/home
 - [ ] Activate deactivated main id's
+- [ ] check if systemd automatically restarts when there is a server shutdown
+- [ ] Add a favicon to the whole page

@@ -23,7 +23,7 @@ func AuthMiddleware(ctx context.Context) gin.HandlerFunc {
 		}
 		_, err := auth.VerifyJWTToken(ctx, tokenString)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid JWT token"})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid JWT token kindly sign back in with valid link!"})
 			return
 		}
 		c.Next()
