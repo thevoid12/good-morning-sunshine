@@ -18,6 +18,7 @@ func Initialize(ctx context.Context, l *zap.Logger) (router *gin.Engine) {
 	router.Use(gin.Recovery())
 	//Assests and Tailwind
 	router.StaticFS("/assets", http.FS(assests.AssestFS))
+	//router.LoadHTMLGlob("client/ui/templates/*")
 
 	//secure group
 	rSecure := router.Group("/sec")
@@ -33,11 +34,11 @@ func Initialize(ctx context.Context, l *zap.Logger) (router *gin.Engine) {
 	rAuth.GET("/gms", handlers.MainPageHandler)
 	rAuth.POST("/gms/submit", handlers.NewMailRecordHandler)
 
-	rAuth.POST("/gms/deactivate/:id", handlers.DeactivateRecordHandler)
+	rAuth.POST("/gms/deactivate/:id/:isactive", handlers.ToggleRecordActivityHandler)
 
 	for _, route := range router.Routes() {
 		l.Sugar().Infof("Route: %s %s", route.Method, route.Path)
-}
+	}
 
 	return router
 }

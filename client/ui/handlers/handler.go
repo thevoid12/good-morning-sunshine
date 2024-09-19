@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"gms/pkg/auth"
 	"gms/pkg/gms"
 	"gms/pkg/gms/model"
@@ -20,6 +21,7 @@ type CheckMail struct {
 }
 type DeactivateRequest struct {
 	RecordID string `validate:"required,uuid"`
+	IsActive string `validate:"required"`
 }
 
 type MainPage struct {
@@ -50,6 +52,12 @@ func HomeHandler(c *gin.Context) {
 		l.Sugar().Errorf("execute template failed", err)
 		return
 	}
+	// err := errors.New("Process failed: This is a server-side error")
+	// c.HTML(http.StatusOK, filepath.Join(viper.GetString("app.uiTemplates"), "layout.html"), gin.H{
+	// 	"title":        "My Page Title",
+	// 	"errorMessage": err.Error(),
+	// })
+
 }
 
 func CheckMailHandler(c *gin.Context) {
@@ -205,57 +213,18 @@ func NewMailRecordHandler(c *gin.Context) {
 		return
 	}
 
-	emailRecords, err := gms.ListMainPage(ctx, ownerMailID)
-	if err != nil {
-		return
-	}
-
-	d := MainPage{
-		AuthToken: authtoken,
-		EmailMeta: []*EmailMeta{},
-	}
-
-	for _, er := range emailRecords {
-		exp := false
-		if er.ExpiryDate.Before(time.Now()) || er.IsDeleted {
-			exp = true
-		}
-		daysRem := 0
-		if !exp {
-
-			duration := time.Until(er.ExpiryDate)
-
-			// Convert the duration to days
-			daysRem = int(duration.Hours()/24) + 1
-		}
-		d.EmailMeta = append(d.EmailMeta, &EmailMeta{
-			RecordID:      er.ID,
-			EmailID:       er.EmailID,
-			IsExpired:     exp,
-			DaysRemaining: daysRem,
-		})
-	}
-	tmpl, err := template.ParseFiles(filepath.Join(viper.GetString("app.uiTemplates"), "mainpage.html"))
-	if err != nil {
-		l.Sugar().Errorf("parse template failed", err)
-		return
-	}
-
-	// Execute the template and write the output to the response
-	err = tmpl.Execute(c.Writer, d)
-	if err != nil {
-		l.Sugar().Errorf("execute template failed", err)
-		return
-	}
+	c.Redirect(302, fmt.Sprintf("/auth/gms?tkn=%s", authtoken))
 }
 
-func DeactivateRecordHandler(c *gin.Context) {
+func ToggleRecordActivityHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	l := logs.GetLoggerctx(ctx)
 
 	recordID := c.Param("id")
+	isActive := c.Param("isactive")
 	req := DeactivateRequest{
 		RecordID: recordID,
+		IsActive: isActive,
 	}
 
 	validate := validator.New()
@@ -264,62 +233,16 @@ func DeactivateRecordHandler(c *gin.Context) {
 		l.Sugar().Errorf("the entered record id is not valid", err)
 		return
 	}
-		authtoken := c.Query("tkn")
-	token, err := auth.VerifyJWTToken(ctx, authtoken)
-	if err != nil {
-		return
-	}
-	tokenClaims, err := auth.ExtractClaims(token)
-	if err != nil {
-		return
-	}
-	ownerMailID := tokenClaims.EmailID // this is the email id the user has signed up with
-	err = gms.SoftDeleteRecordsByID(ctx, recordID)
+	authtoken := c.Query("tkn")
+	_, err = auth.VerifyJWTToken(ctx, authtoken)
 	if err != nil {
 		return
 	}
 
-	emailRecords, err := gms.ListMainPage(ctx, ownerMailID)
+	err = gms.ToggleActivityStatus(ctx, recordID, isActive)
 	if err != nil {
 		return
 	}
 
-	d := MainPage{
-		AuthToken: authtoken,
-		EmailMeta: []*EmailMeta{},
-	}
-
-	for _, er := range emailRecords {
-		exp := false
-		if er.ExpiryDate.Before(time.Now()) || er.IsDeleted {
-			exp = true
-		}
-		daysRem := 0
-		if !exp {
-
-			duration := time.Until(er.ExpiryDate)
-
-			// Convert the duration to days
-			daysRem = int(duration.Hours()/24) + 1
-		}
-		d.EmailMeta = append(d.EmailMeta, &EmailMeta{
-			RecordID:      er.ID,
-			EmailID:       er.EmailID,
-			IsExpired:     exp,
-			DaysRemaining: daysRem,
-		})
-	}
-	tmpl, err := template.ParseFiles(filepath.Join(viper.GetString("app.uiTemplates"), "mainpage.html"))
-	if err != nil {
-		l.Sugar().Errorf("parse template failed", err)
-		return
-	}
-
-	// Execute the template and write the output to the response
-	err = tmpl.Execute(c.Writer, d)
-	if err != nil {
-		l.Sugar().Errorf("execute template failed", err)
-		return
-	}
-
+	c.Redirect(302, fmt.Sprintf("/auth/gms?tkn=%s", authtoken))
 }

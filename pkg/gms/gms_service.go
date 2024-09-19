@@ -172,7 +172,7 @@ func emailMainPage(ctx context.Context, emailID string) error {
 	if err != nil {
 		return err
 	}
-	err = email.SendEmailUsingGmailSMTP(ctx, &emailmodel.SMTP{
+	go email.SendEmailUsingGmailSMTP(ctx, &emailmodel.SMTP{ // it is a go routine as it takes some tike to send mail and i dont have to wait until it finishes
 		ToAddress: emailID,
 		EmailBody: `<html>
 		<body>
@@ -654,6 +654,17 @@ func HardDeleteExpiredEmailIDs(ctx context.Context, thresholdTime time.Time) err
 
 	return nil
 }
+func ToggleActivityStatus(ctx context.Context, recordID string, isActive string) error {
+	if isActive == "1" {
+		err := SoftDeleteRecordsByID(ctx, recordID)
+		return err
+	} else {
+		err := ActivateDeleteRecordsByID(ctx, recordID)
+		return err
+	}
+
+	return nil
+}
 
 func SoftDeleteRecordsByID(ctx context.Context, recordID string) error {
 	l := logs.GetLoggerctx(ctx)
@@ -664,16 +675,41 @@ func SoftDeleteRecordsByID(ctx context.Context, recordID string) error {
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare(dbpkg.SOFT_DELETE_RECORDS_BY_ID)
+	stmt, err := db.Prepare(dbpkg.TOGGLE_RECORDS_DELETION_BY_ID)
 	if err != nil {
 		l.Sugar().Errorf("db prepare failed", err)
 		return err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(recordID)
+	_, err = stmt.Exec(true, recordID)
 	if err != nil {
 		l.Sugar().Errorf("soft delete record by record id failed", err)
+		return err
+	}
+
+	return nil
+}
+
+func ActivateDeleteRecordsByID(ctx context.Context, recordID string) error {
+	l := logs.GetLoggerctx(ctx)
+	db, err := dbpkg.NewdbConnection()
+	if err != nil {
+		l.Sugar().Errorf("new db connection creation failed", err)
+		return err
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare(dbpkg.TOGGLE_RECORDS_DELETION_BY_ID)
+	if err != nil {
+		l.Sugar().Errorf("db prepare failed", err)
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(false, recordID)
+	if err != nil {
+		l.Sugar().Errorf("activate record by record id failed", err)
 		return err
 	}
 

@@ -1,1 +1,50 @@
-<h1>thanks for your time! go ahead and check your mailbox</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg"/>
+    <link href="/assets/css/output.css" rel="stylesheet">
+    <script>
+        // Apply theme based on system preference
+        function applySystemTheme() {
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applySystemTheme);
+
+        // Set initial theme on page load
+        applySystemTheme();
+    </script>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 min-h-screen flex flex-col items-center justify-center transition-colors duration-300">
+    <button id="themeToggle" class="absolute top-4 right-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+    </button>
+
+    <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md max-w-md text-center">
+        <h1 class="text-3xl font-bold mb-4 text-gray-800 dark:text-gray-300">Thanks for your time!</h1>
+        <p class="text-xl mb-6 text-gray-600 dark:text-gray-300">Go ahead and check your mailbox.</p>
+        <button onclick="history.back()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300">
+            Go Back
+        </button>
+    </div>
+
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+
+        // Toggle theme manually on button click
+        themeToggle.addEventListener('click', function() {
+            document.documentElement.classList.toggle('dark');
+        });
+    </script>
+</body>
+</html>

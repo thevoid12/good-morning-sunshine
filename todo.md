@@ -27,3 +27,8 @@
 - [ ] Activate deactivated main id's
 - [ ] check if systemd automatically restarts when there is a server shutdown
 - [ ] Add a favicon to the whole page
+- [ ] Hide the auth token from the url
+  <h1>Resources</h1>
+-  https://iconsvg.xyz/
+-  https://www.material-tailwind.com/docs/html/button
+  

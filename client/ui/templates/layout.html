@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ .title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Tailwind CSS for popup transition */
+        #errorPopup {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center">
+
+    <!-- Error Popup Component -->
+    <div id="errorPopup" class="fixed top-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-lg transform scale-0 opacity-0">
+        <div class="flex items-center">
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span id="errorMessage" class="font-semibold"></span>
+        </div>
+        <button id="closeError" class="absolute top-2 right-2 text-white hover:text-gray-200">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Content -->
+    <div class="p-4">
+        <!-- Your page content goes here -->
+    </div>
+
+    <script>
+        // Error Popup JavaScript
+        const errorPopup = document.getElementById('errorPopup');
+        const errorMessage = document.getElementById('errorMessage');
+        const closeError = document.getElementById('closeError');
+
+        // Function to show error popup
+        function showError(message) {
+            console.log("Show Error Called with Message:", message); // Debug
+            errorMessage.textContent = message;
+            errorPopup.classList.remove('scale-0', 'opacity-0');
+            errorPopup.classList.add('scale-100', 'opacity-100');
+
+            // Automatically hide the error after 5 seconds
+            setTimeout(() => {
+                hideError();
+            }, 5000);
+        }
+
+        // Function to hide error popup
+        function hideError() {
+            errorPopup.classList.remove('scale-100', 'opacity-100');
+            errorPopup.classList.add('scale-0', 'opacity-0');
+        }
+
+        // Event listener for close button
+        closeError.addEventListener('click', hideError);
+
+        // Check for server-side error
+        document.addEventListener('DOMContentLoaded', () => {
+            const serverError = "{{ .errorMessage }}";
+            console.log("Server Error:", serverError); // Debug
+            if (serverError && serverError.trim() !== "") {
+                showError(serverError);
+            } else {
+                console.log("No error to show"); // Debug
+            }
+        });
+    </script>
+</body>
+</html>

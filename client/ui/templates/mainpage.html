@@ -5,6 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Good Morning Sunshine</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg"/>
+
   <link href="/assets/css/output.css" rel="stylesheet">
   <style>
     .dark {
@@ -59,7 +61,14 @@
         <form id="addEmailForm" class="space-y-2" action="/auth/gms/submit?tkn={{.AuthToken}}" method="post">
           <input type="email" id="newEmail" name="emailaddress" placeholder="Enter email" required
             class="w-full p-2 border rounded">
-          <button type="submit" class="w-full bg-black text-white p-2 rounded hover:bg-gray-800">Add Email</button>
+            <button type="submit" class="w-full  bg-black text-white p-2 rounded hover:bg-gray-800 flex items-center justify-center space-x-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              <span>Add Email</span>
+            </button>
+            
         </form>
       </div>
     </div>
@@ -72,10 +81,17 @@
   <script>
     let emails = [];
     const tkn = "{{.AuthToken}}"
+
     function renderEmails() {
       const emailList = document.getElementById('emailList');
       emailList.innerHTML = '';
+      var action=""
       emails.forEach((email, index) => {
+        if (email.active){
+          action="/auth/gms/deactivate/"+email.recordID+"/1/?tkn="+tkn
+        }else{
+          action="/auth/gms/deactivate/"+email.recordID+"/0/?tkn="+tkn
+        }
         const emailDiv = document.createElement('div');
         emailDiv.className = 'bg-gray-100 p-4 rounded-lg';
         emailDiv.innerHTML = `
@@ -89,9 +105,13 @@
                             <p class="text-sm text-gray-600">Days Remaining</p>
                             <p class="text-3xl font-bold">${email.daysRemaining}</p>
                         </div>
-                        <form action="/auth/gms/deactivate/${email.recordID}?tkn=${tkn}" method="post">
-                        <button type="submit" class="px-3 py-1 rounded ${email.active ? 'bg-black text-white' : 'bg-gray-300 text-black'} text-sm">
-                            ${email.active ? 'Deactivate' : 'Activate'}
+                        <form action=${action} method="post">
+                        <button type="submit" class="p-2 px-3 py-1 rounded ${email.active ? 'bg-black text-white' : 'bg-green-600 text-black border border-black'} text-sm flex items-center space-x-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                          </svg>
+                          <span>${email.active ? 'Deactivate' : 'Activate'}</span>
                         </button>
                         </form>
                     </div>
