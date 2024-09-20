@@ -42,6 +42,7 @@ func HomeHandler(c *gin.Context) {
 
 	tmpl, err := template.ParseFiles(filepath.Join(viper.GetString("app.uiTemplates"), "landing_page.html"))
 	if err != nil {
+		RenderErrorTemplate(c, "Internal server error occured", err)
 		l.Sugar().Errorf("parse template failed", err)
 		return
 	}
@@ -49,29 +50,26 @@ func HomeHandler(c *gin.Context) {
 	// Execute the template and write the output to the response
 	err = tmpl.Execute(c.Writer, nil)
 	if err != nil {
+		RenderErrorTemplate(c, "Internal server error occured", err)
 		l.Sugar().Errorf("execute template failed", err)
 		return
 	}
-	// err := errors.New("Process failed: This is a server-side error")
-	// c.HTML(http.StatusOK, filepath.Join(viper.GetString("app.uiTemplates"), "layout.html"), gin.H{
-	// 	"title":        "My Page Title",
-	// 	"errorMessage": err.Error(),
-	// })
 
 }
-
 func CheckMailHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	l := logs.GetLoggerctx(ctx)
 
 	tmpl, err := template.ParseFiles(filepath.Join(viper.GetString("app.uiTemplates"), "check_mail.html"))
 	if err != nil {
+		RenderErrorTemplate(c, "Internal server error occured", err)
 		l.Sugar().Errorf("parse template failed", err)
 		return
 	}
 
 	err = c.Request.ParseForm()
 	if err != nil {
+		RenderErrorTemplate(c, "Parse form failed", err)
 		l.Sugar().Errorf("parse form failed", err)
 		return
 	}
@@ -83,6 +81,7 @@ func CheckMailHandler(c *gin.Context) {
 	validate := validator.New()
 	err = validate.Struct(cm)
 	if err != nil {
+		RenderErrorTemplate(c, "Input is not valid", err)
 		l.Sugar().Errorf("the entered input is not valid", err)
 		return
 	}
@@ -90,12 +89,14 @@ func CheckMailHandler(c *gin.Context) {
 	//send a mail with the link of the website for him to access
 	err = gms.MainPageEntry(ctx, emailID)
 	if err != nil {
-		l.Sugar().Errorf("initial email send failed", err)
+		RenderErrorTemplate(c, "Failed to send mail", err)
+		l.Sugar().Errorf("Initial email send failed", err)
 		return
 	}
 	// Execute the template and write the output to the response
 	err = tmpl.Execute(c.Writer, nil)
 	if err != nil {
+		RenderErrorTemplate(c, "Internal Server error occoured", err)
 		l.Sugar().Errorf("execute template failed", err)
 		return
 	}
@@ -109,10 +110,12 @@ func MainPageHandler(c *gin.Context) {
 	authtoken := c.Query("tkn")
 	token, err := auth.VerifyJWTToken(ctx, authtoken)
 	if err != nil {
+		RenderErrorTemplate(c, "Verify JWT token failed", err)
 		return
 	}
 	tokenClaims, err := auth.ExtractClaims(token)
 	if err != nil {
+		RenderErrorTemplate(c, "Extract JWT Clain failed", err)
 		return
 	}
 	emailID := tokenClaims.EmailID // this is the email id the user has signed up with
@@ -122,6 +125,7 @@ func MainPageHandler(c *gin.Context) {
 	}
 	emailRecords, err := gms.ListMainPage(ctx, emailID)
 	if err != nil {
+		RenderErrorTemplate(c, "An Internal server error occoured", err)
 		return
 	}
 
@@ -151,6 +155,7 @@ func MainPageHandler(c *gin.Context) {
 	}
 	tmpl, err := template.ParseFiles(filepath.Join(viper.GetString("app.uiTemplates"), "mainpage.html"))
 	if err != nil {
+		RenderErrorTemplate(c, "Parse mainpage template failed", err)
 		l.Sugar().Errorf("parse template failed", err)
 		return
 	}
@@ -158,6 +163,7 @@ func MainPageHandler(c *gin.Context) {
 	// Execute the template and write the output to the response
 	err = tmpl.Execute(c.Writer, d)
 	if err != nil {
+		RenderErrorTemplate(c, "Execute template failed", err)
 		l.Sugar().Errorf("execute template failed", err)
 		return
 	}
@@ -170,24 +176,31 @@ func NewMailRecordHandler(c *gin.Context) {
 
 	err := c.Request.ParseForm()
 	if err != nil {
-		l.Sugar().Errorf("parse form failed", err)
+		l.Sugar().Errorf("failed to parse form", err)
+		RenderErrorTemplate(c, "Failed to parse form", err)
 		return
 	}
+
 	emailID := c.PostForm("emailaddress")
 	if emailID == "" {
-		l.Sugar().Errorf("email field cannot be empty")
+		l.Sugar().Errorf("Email field cannot be empty", err)
+		RenderErrorTemplate(c, "Email field cannot be empty", nil)
 		return
 	}
 
 	authtoken := c.Query("tkn")
 	token, err := auth.VerifyJWTToken(ctx, authtoken)
 	if err != nil {
+		RenderErrorTemplate(c, "Invalid authentication token", err)
 		return
 	}
+
 	tokenClaims, err := auth.ExtractClaims(token)
 	if err != nil {
+		RenderErrorTemplate(c, "Failed to extract token claims", err)
 		return
 	}
+
 	ownerMailID := tokenClaims.EmailID // this is the email id the user has signed up with
 
 	cm := CheckMail{
@@ -197,6 +210,7 @@ func NewMailRecordHandler(c *gin.Context) {
 	err = validate.Struct(cm)
 	if err != nil {
 		l.Sugar().Errorf("the entered input is not valid", err)
+		RenderErrorTemplate(c, "The entered input is not valid", err)
 		return
 	}
 
@@ -209,7 +223,7 @@ func NewMailRecordHandler(c *gin.Context) {
 		IsDeleted:   false,
 	})
 	if err != nil {
-		l.Sugar().Errorf("email record creation  failed", err)
+		RenderErrorTemplate(c, "Email record creation failed ", err)
 		return
 	}
 
@@ -231,16 +245,19 @@ func ToggleRecordActivityHandler(c *gin.Context) {
 	err := validate.Struct(req)
 	if err != nil {
 		l.Sugar().Errorf("the entered record id is not valid", err)
+		RenderErrorTemplate(c, "the entered record id is not valid", err)
 		return
 	}
 	authtoken := c.Query("tkn")
 	_, err = auth.VerifyJWTToken(ctx, authtoken)
 	if err != nil {
+		RenderErrorTemplate(c, "Invalid authentication token", err)
 		return
 	}
 
 	err = gms.ToggleActivityStatus(ctx, recordID, isActive)
 	if err != nil {
+		RenderErrorTemplate(c, "Error changing Activity Status", err)
 		return
 	}
 

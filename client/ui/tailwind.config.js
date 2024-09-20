@@ -7,9 +7,21 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#f6ad55',
-      }
-    }
+        red: {
+          primary: '#f6ad55',
+          600: '#dc2626', // Custom red color
+        },
+      },
+      animation: {
+        line: 'lineAnimation 5s linear forwards',
+      },
+      keyframes: {
+        lineAnimation: {
+          '0%': { width: '100%' },
+          '100%': { width: '0%' },
+        },
+      },
+    },
   },
   plugins: [],
 }

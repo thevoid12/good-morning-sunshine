@@ -55,3 +55,6 @@ For production:
 When building for production, use the --minify flag to minimize the CSS file size:
 Copy./tailwindcss -i input.css -o static/output.css --minify
 This approach allows you to use Tailwind CSS without npm or a CDN. However, keep in mind that you'll need to manually update the Tailwind CSS executable when new versions are released.
+
+<h1>my configuration</h1>
+./tailwindcss-windows-x64.exe -i ./client/ui/assets/css/input.css -o ./client/ui/assets/css/output.css 
