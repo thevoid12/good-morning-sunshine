@@ -29,6 +29,7 @@
 - [ ] Add a favicon to the whole page 
 - [ ] Hide the auth token from the url
 - [ ] Add timezone feature and time customization feature
+- [ ]Add versioning
   <h1>Resources</h1>
 -  https://iconsvg.xyz/
 -  https://www.material-tailwind.com/docs/html/button
