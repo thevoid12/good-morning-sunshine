@@ -11,7 +11,9 @@ import (
 	"gms/pkg/gms/model"
 	logs "gms/pkg/logger"
 	"net/url"
+	"os/exec"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -19,38 +21,87 @@ import (
 	"golang.org/x/exp/rand"
 )
 
+func isTimeSynced() (bool, error) {
+	// Check if the system clock has been synchronized using timedatectl this is an ideal check for my rasp pi which can have interupted power supply
+	out, err := exec.Command("timedatectl").Output()
+	if err != nil {
+		return false, err
+	}
+	return strings.Contains(string(out), "System clock synchronized: yes"), nil
+}
+
 // GoodMrngSunshineJob sends runs  once in a day to check if there is any mail to be sent, if the mail needs to be sent, then it picks it up and sends the email
 func GoodMrngSunshineJob(ctx context.Context) {
 	l := logs.GetLoggerctx(ctx)
 
-	now := time.Now()
-	nextRun := time.Date(now.Year(), now.Month(), now.Day(), viper.GetInt("gms.mailjobTimer.hour"), viper.GetInt("gms.mailjobTimer.minute"), viper.GetInt("gms.mailjobTimer.second"), 0, now.Location())
-	if now.After(nextRun) { // if we already crossed our ticker time then we try  on the next day
-		nextRun = nextRun.Add(24 * time.Hour)
+	// Wait for time synchronization
+	for {
+		isTimeSync, err := isTimeSynced()
+		if err != nil {
+			l.Sugar().Error("Error checking time synchronization:", err)
+			return
+		}
+
+		if isTimeSync {
+			break // Exit the loop if time is synchronized
+		}
+
+		l.Sugar().Info("Waiting for time synchronization...")
+		time.Sleep(5 * time.Second) // Retry every 5 seconds until time is synced
 	}
-	initialDelay := nextRun.Sub(now) // This is the amount of time we need to wait for the ticker to start firing
 
-	// Create a ticker that fires daily
-	ticker := time.NewTicker(24 * time.Hour)
+	// Function to calculate the next run time at 6 AM IST
+	calcNextRunTime := func() time.Time {
+		now := time.Now()
+		nextRun := time.Date(
+			now.Year(), now.Month(), now.Day(),
+			viper.GetInt("gms.mailjobTimer.hour"),   // 6
+			viper.GetInt("gms.mailjobTimer.minute"), // 0
+			viper.GetInt("gms.mailjobTimer.second"), // 0
+			0, now.Location(),
+		)
 
-	time.Sleep(initialDelay) // Wait for the initial delay
-	_ = goodMorningSunshine(ctx)
+		if now.After(nextRun) {
+			// If the current time is past 6 AM today, schedule for the next day
+			nextRun = nextRun.Add(24 * time.Hour)
+		}
+		return nextRun
+	}
+
+	// Calculate the next run time after sync
+	nextRun := calcNextRunTime()
+	l.Sugar().Info(fmt.Sprintf("Next run scheduled at: %v", nextRun))
+
+	// Initial delay until the next run at 6 AM
+	initialDelay := time.Until(nextRun)
+	ticker := time.NewTicker(24 * time.Hour) // 24-hour ticker
+
+	// Wait until the first scheduled run
+	time.Sleep(initialDelay)
+	l.Sugar().Info(fmt.Sprintf("First job triggered at: %v", time.Now()))
+	go goodMorningSunshine(ctx) // Run the first job
+
+	// Schedule the job to run every 24 hours, starting from 6 AM the next day
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
-				defer ticker.Stop()
-				l.Sugar().Info(fmt.Sprintf("the gms job starts at: %v", time.Now()))
+				l.Sugar().Info(fmt.Sprintf("The GMS job starts at: %v", time.Now()))
 				err := goodMorningSunshine(ctx)
 				if err != nil {
+					l.Sugar().Error("Error running goodMorningSunshine:", err)
 					continue
 				}
-				l.Sugar().Info(fmt.Sprintf("the gms job ends at: %v", time.Now()))
+				l.Sugar().Info(fmt.Sprintf("The GMS job ends at: %v", time.Now()))
+
 			case <-ctx.Done():
+				ticker.Stop()
+				l.Sugar().Info("GMS job stopped.")
 				return
 			}
 		}
 	}()
+
 	// Run indefinitely
 	select {}
 }
@@ -109,17 +160,17 @@ func goodMorningSunshine(ctx context.Context) error {
 			continue
 		}
 
-		emailbody := email.GetEmailTemplate(randomIndex)
-		_ = email.SendEmailUsingGmailSMTP(ctx, &emailmodel.SMTP{
-			ToAddress: ar.EmailID,
-			EmailBody: emailbody,
-			Subject:   "Your Daily Dose of Sunshine from Good Morning Sunshine",
-		})
+		// emailbody := email.GetEmailTemplate(randomIndex)
+		// _ = email.SendEmailUsingGmailSMTP(ctx, &emailmodel.SMTP{
+		// 	ToAddress: ar.EmailID,
+		// 	EmailBody: emailbody,
+		// 	Subject:   "Your Daily Dose of Sunshine from Good Morning Sunshine",
+		// })
 
 	}
 
 	//Soft Delete expired records
-	err = SoftDeleteExpiredEmailIDs(ctx)
+	// err = SoftDeleteExpiredEmailIDs(ctx)
 	return err
 }
 
