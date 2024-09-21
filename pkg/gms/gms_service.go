@@ -160,17 +160,17 @@ func goodMorningSunshine(ctx context.Context) error {
 			continue
 		}
 
-		// emailbody := email.GetEmailTemplate(randomIndex)
-		// _ = email.SendEmailUsingGmailSMTP(ctx, &emailmodel.SMTP{
-		// 	ToAddress: ar.EmailID,
-		// 	EmailBody: emailbody,
-		// 	Subject:   "Your Daily Dose of Sunshine from Good Morning Sunshine",
-		// })
+		emailbody := email.GetEmailTemplate(randomIndex)
+		_ = email.SendEmailUsingGmailSMTP(ctx, &emailmodel.SMTP{
+			ToAddress: ar.EmailID,
+			EmailBody: emailbody,
+			Subject:   "Your Daily Dose of Sunshine from Good Morning Sunshine",
+		})
 
 	}
 
 	//Soft Delete expired records
-	// err = SoftDeleteExpiredEmailIDs(ctx)
+	err = SoftDeleteExpiredEmailIDs(ctx)
 	return err
 }
 
