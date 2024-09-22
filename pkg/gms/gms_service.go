@@ -33,7 +33,7 @@ func isTimeSynced() (bool, error) {
 // GoodMrngSunshineJob sends runs  once in a day to check if there is any mail to be sent, if the mail needs to be sent, then it picks it up and sends the email
 func GoodMrngSunshineJob(ctx context.Context) {
 	l := logs.GetLoggerctx(ctx)
-
+	l.Sugar().Info("welcome to good morning sunshine job",time.Now())
 	// Wait for time synchronization
 	for {
 		isTimeSync, err := isTimeSynced()
@@ -43,6 +43,7 @@ func GoodMrngSunshineJob(ctx context.Context) {
 		}
 
 		if isTimeSync {
+			l.Sugar().Info("Time is in perfect sync")
 			break // Exit the loop if time is synchronized
 		}
 
@@ -74,10 +75,10 @@ func GoodMrngSunshineJob(ctx context.Context) {
 
 	// Initial delay until the next run at 6 AM
 	initialDelay := time.Until(nextRun)
-	ticker := time.NewTicker(24 * time.Hour) // 24-hour ticker
 
 	// Wait until the first scheduled run
 	time.Sleep(initialDelay)
+	ticker := time.NewTicker(24 * time.Hour) // 24-hour ticker
 	l.Sugar().Info(fmt.Sprintf("First job triggered at: %v", time.Now()))
 	go goodMorningSunshine(ctx) // Run the first job
 
