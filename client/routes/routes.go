@@ -26,6 +26,8 @@ func Initialize(ctx context.Context, l *zap.Logger) (router *gin.Engine) {
 	rSecure.Use(middleware.ContextMiddleware(ctx))
 	rSecure.GET("/home", handlers.HomeHandler)
 	router.GET("/", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "sec/home") })
+	rSecure.GET("/premium", handlers.PremiumHandler)
+
 	rSecure.POST("/checkmail", handlers.CheckMailHandler)
 
 	//auth group sets the context and calls auth middleware

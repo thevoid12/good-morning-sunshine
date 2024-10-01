@@ -56,6 +56,28 @@ func HomeHandler(c *gin.Context) {
 	}
 
 }
+
+func PremiumHandler(c *gin.Context) {
+	ctx := c.Request.Context()
+	l := logs.GetLoggerctx(ctx)
+
+	tmpl, err := template.ParseFiles(filepath.Join(viper.GetString("app.uiTemplates"), "premium.html"))
+	if err != nil {
+		RenderErrorTemplate(c, "Internal server error occured", err)
+		l.Sugar().Errorf("parse template failed", err)
+		return
+	}
+
+	// Execute the template and write the output to the response
+	err = tmpl.Execute(c.Writer, nil)
+	if err != nil {
+		RenderErrorTemplate(c, "Internal server error occured", err)
+		l.Sugar().Errorf("execute template failed", err)
+		return
+	}
+
+}
+
 func CheckMailHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	l := logs.GetLoggerctx(ctx)

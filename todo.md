@@ -33,4 +33,6 @@
   <h1>Resources</h1>
 -  https://iconsvg.xyz/
 -  https://www.material-tailwind.com/docs/html/button
+-  https://razorpay.com/docs/payments/payment-gateway/web-integration/standard/integration-steps#1-build-integration
+- 
   
