@@ -1,79 +1,285 @@
 <!DOCTYPE html>
-<html lang="en" class="light">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Good Morning Sunshine</title>
-  <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg"/>
-  <link href="/assets/css/output.css" rel="stylesheet">
+  <title>GoodMorningSunshine - Start your day with a smile and a little bit of sunshine.</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
 
 </head>
+<!-- Success Message -->
+<div id="success-message"
+  class="hidden fixed top-0 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-md mt-4 z-50">
+  Success
+</div>
 
-<body class="bg-white dark:bg-gray-900 transition-colors duration-300">
-  <div class="container mx-auto px-4">
-    <header class="flex justify-between items-center py-4">
-      <div class="text-2xl text-primary dark:text-yellow-400">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
+<body class="bg-gray-50">
+  <header class="bg-white shadow-sm">
+    <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="/sec/home" class="text-2xl font-bold text-indigo-600">GoodMorningSunshine</a>
+      <div class="space-x-4">
+        <!-- <a href="#" class="text-gray-600 hover:text-gray-900">Pricing</a> -->
+        <a href="/sec/premium" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Pricing</a>
       </div>
-      <nav>
-        <ul class="flex space-x-6 text-gray-600 dark:text-gray-300">
-          <li><a href="#" class="hover:text-gray-900 dark:hover:text-white">Features</a></li>
-          <li><a href="/sec/premium" class="hover:text-gray-900 dark:hover:text-white">Pricing</a></li>
-          <li><a href="#" class="hover:text-gray-900 dark:hover:text-white">About</a></li>
-          <li><a href="#" class="hover:text-gray-900 dark:hover:text-white">Contact</a></li>
-        </ul>
-      </nav>
-      <button id="darkModeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-800 dark:text-yellow-300" fill="none"
-          viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-        </svg>
-      </button>
-    </header>
+    </nav>
+  </header>
 
-    <main class="flex flex-col md:flex-row items-center justify-between py-20">
-      <div class="md:w-1/2 mb-10 md:mb-0">
-        <h1 class="text-5xl font-bold mb-4 text-gray-900 dark:text-white">Good Morning Sunshine</h1>
-        <p class="text-xl text-gray-600 dark:text-gray-400 mb-8">Start your day with a smile and a little bit of
-          sunshine.</p>
-        <form class="flex flex-col sm:flex-row gap-4" action="checkmail/" method="post">
-          <input type="email" placeholder="Enter your email" name="emailaddress"
-            class="flex-grow px-4 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary">
-          <button type="submit"
-            class="px-6 py-2 bg-gray-900 dark:bg-primary text-white rounded-md hover:bg-gray-800 dark:hover:bg-yellow-500 transition-colors duration-300">Sign
-            Up</button>
+  <main class="container mx-auto px-4 py-12">
+    <div class="flex flex-col md:flex-row items-center justify-between">
+      <div class="md:w-1/2 mb-8 md:mb-0">
+        <h1 class="text-4xl font-bold mb-4">Start your day with a smile and a little bit of sunshine</h1>
+        <div class="space-x-4">
+          <button class="bg-indigo-600 text-white px-6 py-3 rounded-md hover:bg-indigo-700">Start Now</button>
+          <button class="border border-indigo-600 text-indigo-600 px-6 py-3 rounded-md hover:bg-indigo-50">Learn
+            More</button>
+        </div>
+        <p class="text-sm text-gray-500 mt-4">Your first few mails are on us! No Payment Required!</p>
+      </div>
+
+      <div class="md:w-1/2">
+        <form class="bg-white p-6 rounded-lg shadow-md" action="checkmail/" method="post">
+          <h2 class="text-lg font-semibold mb-4">Enter Your Email</h2>
+          <p class="text-sm text-gray-500 mt-4">Sign up with your email to gain instant access to Good Morning Sunshine
+            and send delightful good morning emails to
+            your loved ones with one click of a button.</p>
+          <br> <input type="email" id="gmsInput" name="emailaddress" class="w-full p-2 border rounded-md mb-4" rows="3"
+            placeholder="Enter your Email Address"></input>
+          <button id="generategms" type="submit"
+            class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Initiate
+            Sunshine</button>
         </form>
-        <p class="mt-4 text-sm text-gray-600 dark:text-gray-400">
-          Sign up with your email to gain instant access to Good Morning Sunshine and send delightful good morning emails to your loved ones with one click of a button.
-          <a href="#" class="underline hover:text-gray-900 dark:hover:text-white">Terms &amp; Conditions</a>
-        </p>
       </div>
-      <div class="md:w-1/2 flex justify-center">
-        <div
-          class="w-64 h-64 bg-gradient-to-br from-yellow-300 to-primary rounded-full flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 text-white" fill="none" viewBox="0 0 24 24"
-            stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-          </svg>
+    </div>
+
+    <section class="mt-24">
+      <h2 class="text-3xl font-bold text-center mb-12">Whats Good Morning Sunshine?</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-white p-6 rounded-lg shadow-sm">
+          <h3 class="text-xl font-semibold mb-4">7 days of Mail</h3>
+          <p class="text-gray-600">Delight your loved one with 7 days of captivating and unique morning
+            messages,
+            crafted just for them!</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-sm">
+          <h3 class="text-xl font-semibold mb-4">Mood Driven</h3>
+          <p class="text-gray-600">Mood driven Morning messages</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-sm">
+          <h3 class="text-xl font-semibold mb-4">AI-Powered & Multi-Timezone Support</h3>
+          <p class="text-gray-600">Schedule AI Powered customized messages and Send seamlessly across different
+            time zones.
+          </p>
         </div>
       </div>
-    </main>
+    </section>
+
+    <section class="mt-24">
+      <h2 class="text-3xl font-bold mb-8">How it works</h2>
+      <div class="flex flex-col md:flex-row items-start gap-12">
+        <div class="md:w-1/2">
+          <p class="text-gray-600 mb-8">Our messages are friendly, professional, and suitable for all
+            relationships. Perfect for anyone from friends to colleagues, across all roles and genders.</p>
+          <ul class="space-y-4">
+            <li class="flex items-start">
+              <svg class="w-6 h-6 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+              <div>
+                <h4 class="font-semibold">Enter Your Email</h4>
+                <p class="text-gray-600">Start by entering your own email address. This is where we'll send you a secure
+                  link to manage your Good Morning Sunshine (GMS) messages.</p>
+              </div>
+            </li>
+            <li class="flex items-start">
+              <svg class="w-6 h-6 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+              <div>
+                <h4 class="font-semibold">Receive Your Access Link</h4>
+                <p class="text-gray-600">After submitting, check your inbox for an email from us containing your
+                  personal GMS access link.
+                </p>
+              </div>
+            </li>
+            <li class="flex items-start">
+              <svg class="w-6 h-6 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+              <div>
+                <h4 class="font-semibold">Add Recipients & Set Schedule</h4>
+                <p class="text-gray-600">Use the link to add or remove recipient email addresses and customize the time
+                  zone
+                  you'd like messages to be sent.</p>
+
+              </div>
+            </li>
+            <li class="flex items-start">
+              <svg class="w-6 h-6 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+              <div>
+                <h4 class="font-semibold">Sit Back and Relax</h4>
+                <p class="text-gray-600">That's it! Our system will take care of the rest. Enjoy knowing that
+                  delightful morning messages are on their way, right on time to your loved ones.</p>
+
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="md:w-1/2">
+          <img src="/assets/img/demo-photo.jpg?height=400&width=600" alt="gms Mainpage Image"
+            class="w-full rounded-lg shadow-md">
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-24">
+      <h2 class="text-3xl font-bold text-center mb-12">Why do I need it?</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-indigo-600 text-white p-6 rounded-lg">
+          <h3 class="text-xl font-semibold mb-4">Brighten Someone’s Day</h3>
+          <p>Sending a thoughtful morning message can bring a smile and positive energy to a loved one’s day, setting a
+            warm tone from the moment they wake up.</p>
+        </div>
+        <div class="bg-indigo-600 text-white p-6 rounded-lg">
+          <h3 class="text-xl font-semibold mb-4">Effortless Personalization</h3>
+          <p>Good Morning Sunshine makes it easy to send customized,messages without the hassle of daily
+            reminders, so you can stay connected effortlessly.</p>
+        </div>
+        <div class="bg-indigo-600 text-white p-6 rounded-lg">
+          <h3 class="text-xl font-semibold mb-4">Perfect Across Time Zones</h3>
+          <p>With multi-timezone support, your messages arrive just when they’re needed, no matter where you
+            are in the world.</p>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="bg-gray-50 py-16">
+      <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-12 text-gray-900">What Our Users Say</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Testimonial 1 -->
+          <div class="bg-white rounded-lg shadow-lg p-6">
+            <p class="text-gray-600 mb-4">Good Morning Sunshine is such a great way to let people know I’m thinking of
+              them! It’s sweet, easy, and just makes everyone’s day better.</p>
+            <div class="flex items-center">
+              <div>
+                <p class="font-semibold text-gray-800">Ajay Raj</p>
+              </div>
+            </div>
+          </div>
+          <!-- Testimonial 2 -->
+          <div class="bg-white rounded-lg shadow-lg p-6">
+            <p class="text-gray-600 mb-4">I started sending these to my team, and it’s really lifted everyone’s mood.
+              Such an awesome way to start the day!</p>
+            <div class="flex items-center">
+              <div>
+                <p class="font-semibold text-gray-800">Akalya</p>
+                <p class="text-sm text-gray-500">Product Manager</p>
+              </div>
+            </div>
+          </div>
+          <!-- Testimonial 3 -->
+          <div class="bg-white rounded-lg shadow-lg p-6">
+            <p class="text-gray-600 mb-4">The messages are simple, fun, and work for anyone. My friends look forward to
+              them every morning!</p>
+            <div class="flex items-center">
+              <div>
+                <p class="font-semibold text-gray-800">Kaarthik A M</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+
+
+</body>
+<section class="mt-24">
+  <h2 class="text-3xl font-bold text-center mb-12">Frequently asked questions</h2>
+  <div class="max-w-3xl mx-auto">
+    <div class="space-y-8">
+      <div>
+        <h3 class="text-xl font-semibold mb-2">How many emails can I send from one email ID for free?</h3>
+        <p class="text-gray-600">You can send messages to a maximum of 10 users from one email ID for free.</p>
+      </div>
+      <div>
+        <h3 class="text-xl font-semibold mb-2">How many GMS sign-up links can I receive for an email ID?</h3>
+        <p class="text-gray-600">You can receive up to 3 GMS sign-up links for a single email ID.</p>
+      </div>
+      <div>
+        <h3 class="text-xl font-semibold mb-2">How secure Is this website?</h3>
+        <p class="text-gray-600">We will have no access to your email data. Your privacy matters the most</p>
+      </div>
+      <div>
+        <h3 class="text-xl font-semibold mb-2">Can I upload my own gms templates?</h3>
+        <p class="text-gray-600">You can upload your own templates and use our AI to generate gmss on that image.</p>
+      </div>
+      <div>
+        <h3 class="text-xl font-semibold mb-2">Can I send messages to recipients in different time zones?</h3>
+        <p class="text-gray-600">Yes, our multi-timezone support ensures that messages are sent at the right time for
+          each recipient.</p>
+      </div>
+      <div>
+        <h3 class="text-xl font-semibold mb-2">Are the messages suitable for all types of relationships?</h3>
+        <p class="text-gray-600">Yes! Our messages are friendly and appropriate for anyone—from friends to coworkers.
+        </p>
+      </div>
+      <div>
+        <h3 class="text-xl font-semibold mb-2">Can I remove recipients after I’ve added them?</h3>
+        <p class="text-gray-600">Yes, you can add or remove recipients anytime through your GMS access link.</p>
+      </div>
+      <div>
+        <h3 class="text-xl font-semibold mb-2">Do I need to log in to manage my messages?</h3>
+        <p class="text-gray-600">You can manage your messages using the link sent to your email—no need for a separate
+          login!</p>
+      </div>
+      <div>
+        <h3 class="text-xl font-semibold mb-2">What happens if I forget my GMS access link?</h3>
+        <p class="text-gray-600">If you lose your link, you can request a new one by entering your email again, and
+          we'll send it right to you.</p>
+      </div>
+    </div>
   </div>
+</section>
 
-  <script>
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    const html = document.documentElement;
+<footer class="bg-gray-100 mt-24 py-12">
+  <div class="container mx-auto px-4">
+    <div class="flex flex-wrap justify-between">
+      <div class="w-full md:w-1/2 mb-4 md:mb-0">
+        <h4 class="font-bold mb-4">Company</h4>
+        <ul class="space-y-2">
+          <li><a href="mailto:goodmrngsunshine@gmail.com" class="text-gray-600 hover:text-gray-900">I am here to help
+              with any questions about
+              gms! Reach out to me at goodmrngsunshine@gmail.com</a></li>
+          <li><a href="mailto:thevoiddd1@gmail.com" class="text-gray-600 hover:text-gray-900"> Hi i am void and I tinker
+              with
+              code</a>
+          </li>
+        </ul>
+      </div>
+      <div class="w-full md:w-1/2 text-right">
+        <p class="text-sm text-gray-600">&copy; 2024 goodmorningsunshine. All rights reserved.</p>
+      </div>
+    </div>
 
-    darkModeToggle.addEventListener('click', () => {
-      html.classList.toggle('dark');
-    });
-  </script>
+  </div>
+</footer>
 </body>
 
 </html>

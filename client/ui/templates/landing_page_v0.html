@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Good Morning Sunshine</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg"/>
+  <link href="/assets/css/output.css" rel="stylesheet">
+
+</head>
+
+<body class="bg-white dark:bg-gray-900 transition-colors duration-300">
+  <div class="container mx-auto px-4">
+    <header class="flex justify-between items-center py-4">
+      <div class="text-2xl text-primary dark:text-yellow-400">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      </div>
+      <nav>
+        <ul class="flex space-x-6 text-gray-600 dark:text-gray-300">
+          <li><a href="#" class="hover:text-gray-900 dark:hover:text-white">Features</a></li>
+          <li><a href="/sec/premium" class="hover:text-gray-900 dark:hover:text-white">Pricing</a></li>
+          <li><a href="#" class="hover:text-gray-900 dark:hover:text-white">About</a></li>
+          <li><a href="#" class="hover:text-gray-900 dark:hover:text-white">Contact</a></li>
+        </ul>
+      </nav>
+      <button id="darkModeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-800 dark:text-yellow-300" fill="none"
+          viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+      </button>
+    </header>
+
+    <main class="flex flex-col md:flex-row items-center justify-between py-20">
+      <div class="md:w-1/2 mb-10 md:mb-0">
+        <h1 class="text-5xl font-bold mb-4 text-gray-900 dark:text-white">Good Morning Sunshine</h1>
+        <p class="text-xl text-gray-600 dark:text-gray-400 mb-8">Start your day with a smile and a little bit of
+          sunshine.</p>
+        <form class="flex flex-col sm:flex-row gap-4" action="checkmail/" method="post">
+          <input type="email" placeholder="Enter your email" name="emailaddress"
+            class="flex-grow px-4 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary">
+          <button type="submit"
+            class="px-6 py-2 bg-gray-900 dark:bg-primary text-white rounded-md hover:bg-gray-800 dark:hover:bg-yellow-500 transition-colors duration-300">Sign
+            Up</button>
+        </form>
+        <p class="mt-4 text-sm text-gray-600 dark:text-gray-400">
+          Sign up with your email to gain instant access to Good Morning Sunshine and send delightful good morning emails to your loved ones with one click of a button.
+          <a href="#" class="underline hover:text-gray-900 dark:hover:text-white">Terms &amp; Conditions</a>
+        </p>
+      </div>
+      <div class="md:w-1/2 flex justify-center">
+        <div
+          class="w-64 h-64 bg-gradient-to-br from-yellow-300 to-primary rounded-full flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 text-white" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const html = document.documentElement;
+
+    darkModeToggle.addEventListener('click', () => {
+      html.classList.toggle('dark');
+    });
+  </script>
+</body>
+
+</html>
