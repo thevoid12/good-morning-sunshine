@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"fmt"
+	constants "gms/constant"
 	"gms/pkg/auth"
+	dbpkg "gms/pkg/db"
 	"gms/pkg/gms"
 	"gms/pkg/gms/model"
 	logs "gms/pkg/logger"
@@ -27,6 +29,7 @@ type DeactivateRequest struct {
 type MainPage struct {
 	AuthToken string
 	EmailMeta []*EmailMeta
+	Timezone  []string
 }
 
 type EmailMeta struct {
@@ -175,6 +178,7 @@ func MainPageHandler(c *gin.Context) {
 			DaysRemaining: daysRem,
 		})
 	}
+	d.Timezone = constants.TimezonesSlice
 	tmpl, err := template.ParseFiles(filepath.Join(viper.GetString("app.uiTemplates"), "mainpage.html"))
 	if err != nil {
 		RenderErrorTemplate(c, "Parse mainpage template failed", err)
@@ -209,6 +213,12 @@ func NewMailRecordHandler(c *gin.Context) {
 		RenderErrorTemplate(c, "Email field cannot be empty", nil)
 		return
 	}
+	timezone := c.PostForm("tz")
+	if timezone == "" {
+		l.Sugar().Errorf("timezone cannot be empty", err)
+		RenderErrorTemplate(c, "Timezone cannot be empty", nil)
+		return
+	}
 
 	authtoken := c.Query("tkn")
 	token, err := auth.VerifyJWTToken(ctx, authtoken)
@@ -236,11 +246,19 @@ func NewMailRecordHandler(c *gin.Context) {
 		return
 	}
 
+	mailTime, err := gms.ConvertMailTime(timezone)
+	if err != nil {
+		RenderErrorTemplate(c, "Convert Timezone format failed", err)
+		return
+	}
+
+	id := uuid.New()
 	err = gms.EmailRecord(ctx, &model.EmailRecord{
-		ID:          uuid.New(),
+		ID:          id,
 		EmailID:     emailID,
 		OwnerMailID: ownerMailID,
 		ExpiryDate:  time.Now().AddDate(0, 0, 7),
+		TimeZone:    timezone,
 		CreatedOn:   time.Now(),
 		IsDeleted:   false,
 	})
@@ -248,6 +266,14 @@ func NewMailRecordHandler(c *gin.Context) {
 		RenderErrorTemplate(c, "Email record creation failed ", err)
 		return
 	}
+
+	cache := dbpkg.GetCacheFromctx(ctx)
+	cache.Set(fmt.Sprintf("%s", mailTime.Format("15:04:05")), &dbpkg.CacheEntry{
+		RecordID:      id,
+		EmailID:       emailID,
+		RandomNumbers: "",
+		ExpiryDate:    time.Now().AddDate(0, 0, 7),
+	})
 
 	c.Redirect(302, fmt.Sprintf("/auth/gms?tkn=%s", authtoken))
 }

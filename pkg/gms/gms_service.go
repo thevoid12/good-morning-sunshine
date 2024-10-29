@@ -33,7 +33,7 @@ func isTimeSynced() (bool, error) {
 // GoodMrngSunshineJob sends runs  once in a day to check if there is any mail to be sent, if the mail needs to be sent, then it picks it up and sends the email
 func GoodMrngSunshineJob(ctx context.Context) {
 	l := logs.GetLoggerctx(ctx)
-	l.Sugar().Info("welcome to good morning sunshine job",time.Now())
+	l.Sugar().Info("welcome to good morning sunshine job", time.Now())
 	// Wait for time synchronization
 	for {
 		isTimeSync, err := isTimeSynced()
@@ -80,7 +80,8 @@ func GoodMrngSunshineJob(ctx context.Context) {
 	time.Sleep(initialDelay)
 	ticker := time.NewTicker(24 * time.Hour) // 24-hour ticker
 	l.Sugar().Info(fmt.Sprintf("First job triggered at: %v", time.Now()))
-	go goodMorningSunshine(ctx) // Run the first job
+	cache := dbpkg.GetCacheFromctx(ctx)
+	go goodMorningSunshine(ctx, cache) // Run the first job
 
 	// Schedule the job to run every 24 hours, starting from 6 AM the next day
 	go func() {
@@ -88,7 +89,7 @@ func GoodMrngSunshineJob(ctx context.Context) {
 			select {
 			case <-ticker.C:
 				l.Sugar().Info(fmt.Sprintf("The GMS job starts at: %v", time.Now()))
-				err := goodMorningSunshine(ctx)
+				err := goodMorningSunshine(ctx, cache)
 				if err != nil {
 					l.Sugar().Error("Error running goodMorningSunshine:", err)
 					continue
@@ -107,17 +108,22 @@ func GoodMrngSunshineJob(ctx context.Context) {
 	select {}
 }
 
-func goodMorningSunshine(ctx context.Context) error {
+func goodMorningSunshine(ctx context.Context, cache *dbpkg.Cache) error {
 	maxdays := viper.GetInt("gms.maxdays")
 	l := logs.GetLoggerctx(ctx)
 	//send mail to non expired mail ID's
-	activeRecords, err := ListActiveEmailIDs(ctx)
-	if err != nil {
-		return err
+	curtime := time.Now().Format("15:04:05")
+	activeRecords := cache.Get(curtime)
+	if activeRecords == nil {
+		return nil
 	}
-	for _, ar := range activeRecords {
-		randmap := make(map[int64]bool)
-		temp := ""
+	randmap := make(map[int64]bool)
+	temp := ""
+	for i, ar := range activeRecords {
+		if ar.ExpiryDate.Before(time.Now()) { //remove the record from the cache
+			activeRecords = append(activeRecords[:i], activeRecords[i+1:]...)
+		}
+
 		for _, rn := range ar.RandomNumbers {
 			if rn == ',' {
 				num, err := strconv.ParseInt(temp, 10, 64) // base 10 and 64-bit integer
@@ -156,7 +162,7 @@ func goodMorningSunshine(ctx context.Context) error {
 		} else {
 			ar.RandomNumbers += "," + fmt.Sprintf("%d", randomIndex)
 		}
-		err = UpdateEmailRecRandNumber(ctx, ar.ID, ar.RandomNumbers)
+		err := UpdateEmailRecRandNumber(ctx, ar.RecordID, ar.RandomNumbers)
 		if err != nil {
 			continue
 		}
@@ -169,9 +175,15 @@ func goodMorningSunshine(ctx context.Context) error {
 		})
 
 	}
+	//update the cache with the removed records
+	if len(activeRecords) == 0 {
+		cache.Delete(curtime)
+	} else {
+		cache.Update(curtime, activeRecords)
+	}
 
 	//Soft Delete expired records
-	err = SoftDeleteExpiredEmailIDs(ctx)
+	err := SoftDeleteExpiredEmailIDs(ctx)
 	return err
 }
 
@@ -281,6 +293,36 @@ func ListMainPage(ctx context.Context, emailID string) ([]*model.EmailRecord, er
 	return emailRecords, nil
 }
 
+// convert to 6am to their timezone to ist time
+func ConvertMailTime(tz string) (time.Time, error) {
+	// Load the source timezone
+	srcLocation, err := time.LoadLocation(tz)
+	if err != nil {
+		return time.Time{}, fmt.Errorf("error loading source timezone: %v", err)
+	}
+
+	// Load IST timezone
+	istLocation, err := time.LoadLocation("Asia/Kolkata")
+	if err != nil {
+		return time.Time{}, fmt.Errorf("error loading IST timezone: %v", err)
+	}
+	now := time.Now()
+	srcTime := time.Date(
+		now.Year(), now.Month(), now.Day(),
+		viper.GetInt("gms.mailjobTimer.hour"),   // 6
+		viper.GetInt("gms.mailjobTimer.minute"), // 0
+		viper.GetInt("gms.mailjobTimer.second"), // 0
+		0, srcLocation,
+	)
+	// // Set a reference date (January 2, 2006, is the canonical reference in Go)
+	// srcTime := time.Date(2006, time.January, 2, hour, minute, 0, 0, srcLocation)
+
+	// Convert the time to IST
+	istTime := srcTime.In(istLocation)
+
+	return istTime, nil
+}
+
 /*******************************DATABASE *******************************************/
 
 func EmailRecordTable(ctx context.Context) error {
@@ -326,7 +368,7 @@ func EmailRecord(ctx context.Context, mailRecord *model.EmailRecord) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(mailRecord.ID, mailRecord.EmailID, mailRecord.OwnerMailID, mailRecord.ExpiryDate, "", mailRecord.CreatedOn, mailRecord.IsDeleted)
+	_, err = stmt.Exec(mailRecord.ID, mailRecord.EmailID, mailRecord.OwnerMailID, mailRecord.ExpiryDate, mailRecord.TimeZone, "", mailRecord.CreatedOn, mailRecord.IsDeleted)
 	if err != nil {
 		l.Sugar().Errorf("email record table creation failed", err)
 		return err

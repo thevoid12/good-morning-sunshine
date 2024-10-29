@@ -2,10 +2,12 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"gms/client/routes"
 
 	//"gms/pkg/email"
 
+	dbpkg "gms/pkg/db"
 	"gms/pkg/gms"
 	logs "gms/pkg/logger"
 	"log"
@@ -36,14 +38,44 @@ func main() {
 	if err != nil {
 		log.Println("error initializing logger", err)
 	}
-
-	l.Sugar().Info("this is a test logger")
-
+	c := dbpkg.NewCache()
 	ctx := context.Background()
 	ctx = logs.SetLoggerctx(ctx, l)
+	ctx = dbpkg.SetCachectx(ctx, c)
+
+	err = InitializeCache(ctx, c)
+	if err != nil {
+		l.Sugar().Error("cache initialization failed", err)
+		return
+	}
+	l.Sugar().Info("cache initialized successfully")
 
 	go gms.GoodMrngSunshineJob(ctx) //a go routine to run sending mail job forever
 
 	route := routes.Initialize(ctx, l)
 	route.Run(":" + viper.GetString("app.port"))
+}
+
+func InitializeCache(ctx context.Context, cache *dbpkg.Cache) error {
+	//get all the records
+	//load the valid values in the cache
+	emailRecords, err := gms.ListActiveEmailIDs(ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, record := range emailRecords {
+		mailTime, err := gms.ConvertMailTime(record.TimeZone)
+		if err != nil {
+			return err
+		}
+		//cache key is the time and value is the array of details
+		cache.Set(fmt.Sprintf("%s", mailTime.Format("15:04:05")), &dbpkg.CacheEntry{
+			RecordID:      record.ID,
+			EmailID:       record.EmailID,
+			RandomNumbers: record.RandomNumbers,
+			ExpiryDate:    record.ExpiryDate,
+		})
+	}
+	return nil
 }

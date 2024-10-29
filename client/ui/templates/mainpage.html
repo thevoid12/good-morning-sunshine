@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Good Morning Sunshine</title>
-  <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg"/>
+  <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg" />
 
   <link href="/assets/css/output.css" rel="stylesheet">
   <style>
@@ -59,22 +59,31 @@
       <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
         <h2 class="text-xl font-bold mb-4">Add New Email</h2>
         <form id="addEmailForm" class="space-y-2" action="/auth/gms/submit?tkn={{.AuthToken}}" method="post">
-            <input type="email" id="newEmail" name="emailaddress" placeholder="Enter email" required
-                class="w-full p-2 border rounded">
-            <p class="text-sm text-gray-500 mb-4">
-                Brighten your loved one's mornings with Good Morning Sunshine! Just enter their email, sit back, and relax. For the next 7 days, they'll receive personalized good morning messages at 6 AM IST. 
-                It's a simple yet heartfelt way to spread joy and show you care!
-            </p>
-            <button type="submit" class="w-full bg-black text-white p-2 rounded hover:bg-gray-800 flex items-center justify-center space-x-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                </svg>
-                <span>Add Email</span>
-            </button>
+          <input type="email" id="newEmail" name="emailaddress" placeholder="Enter email" required
+            class="w-full p-2 border rounded">
+          <p class="text-sm text-gray-500 mb-4">
+            Brighten your loved one's mornings with Good Morning Sunshine! Just enter their email, sit back, and relax.
+            For the next 7 days, they'll receive personalized good morning messages at 6 AM IST.
+            It's a simple yet heartfelt way to spread joy and show you care!
+          </p>
+          <select name="tz">
+            {{ range .Timezone }}
+            <option value="{{ . }}">{{ . }}</option>
+            {{ end }}
+          </select>
+          <button type="submit"
+            class="w-full bg-black text-white p-2 rounded hover:bg-gray-800 flex items-center justify-center space-x-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <span>Add Email</span>
+          </button>
+
         </form>
-    </div>
-    
+      </div>
+
     </div>
   </main>
 
@@ -89,12 +98,12 @@
     function renderEmails() {
       const emailList = document.getElementById('emailList');
       emailList.innerHTML = '';
-      var action=""
+      var action = ""
       emails.forEach((email, index) => {
-        if (email.active){
-          action="/auth/gms/deactivate/"+email.recordID+"/1/?tkn="+tkn
-        }else{
-          action="/auth/gms/deactivate/"+email.recordID+"/0/?tkn="+tkn
+        if (email.active) {
+          action = "/auth/gms/deactivate/" + email.recordID + "/1/?tkn=" + tkn
+        } else {
+          action = "/auth/gms/deactivate/" + email.recordID + "/0/?tkn=" + tkn
         }
         const emailDiv = document.createElement('div');
         emailDiv.className = 'bg-gray-100 p-4 rounded-lg';
@@ -146,9 +155,9 @@
       html.classList.toggle('dark');
     });
 
-  {{ range .EmailMeta}}
-  addEmail("{{.EmailID}}", "{{.DaysRemaining}}", "{{not .IsExpired}}", "{{.RecordID}}")
- {{ end }}
+    { { range.EmailMeta } }
+    addEmail("{{.EmailID}}", "{{.DaysRemaining}}", "{{not .IsExpired}}", "{{.RecordID}}")
+    { { end } }
   </script>
 </body>
 

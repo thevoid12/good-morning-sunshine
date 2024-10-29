@@ -22,6 +22,11 @@
       "minute": 0,
       "second": 0
     },
+    "cleanCacheTime": {
+      "hour": 1,
+      "minute": 0,
+      "second": 0
+    },
     "jwt": {
       "maxValidDays": 15
     }
