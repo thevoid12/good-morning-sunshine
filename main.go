@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"gms/client/routes"
 
 	//"gms/pkg/email"
@@ -18,6 +17,10 @@ import (
 
 func main() {
 	err := godotenv.Load()
+	if err != nil {
+		log.Println("there is a error loading environment variables", err)
+		return
+	}
 	viper.SetConfigName("config")
 	viper.SetConfigType("json")
 	viper.AddConfigPath("config/") // path to look for the config file in
@@ -70,12 +73,14 @@ func InitializeCache(ctx context.Context, cache *dbpkg.Cache) error {
 			return err
 		}
 		//cache key is the time and value is the array of details
-		cache.Set(fmt.Sprintf("%s", mailTime.Format("15:04:05")), &dbpkg.CacheEntry{
+		cache.Set(mailTime.Format("15:04:05"), &dbpkg.CacheEntry{
 			RecordID:      record.ID,
 			EmailID:       record.EmailID,
 			RandomNumbers: record.RandomNumbers,
 			ExpiryDate:    record.ExpiryDate,
 		})
+
 	}
+
 	return nil
 }

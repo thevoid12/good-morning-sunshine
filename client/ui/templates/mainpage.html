@@ -88,7 +88,7 @@
   </main>
 
   <footer class="bg-gray-100 py-4 px-6 text-center">
-    <p>&copy; 2023 Good Morning Sunshine. All rights reserved.</p>
+    <p>&copy; 2024 Good Morning Sunshine. All rights reserved.</p>
   </footer>
 
   <script>
@@ -155,9 +155,9 @@
       html.classList.toggle('dark');
     });
 
-    { { range.EmailMeta } }
+    {{ range .EmailMeta }}
     addEmail("{{.EmailID}}", "{{.DaysRemaining}}", "{{not .IsExpired}}", "{{.RecordID}}")
-    { { end } }
+    {{ end }}
   </script>
 </body>
 
