@@ -8,6 +8,7 @@ import (
 	"gms/pkg/gms"
 	"gms/pkg/gms/model"
 	logs "gms/pkg/logger"
+	"gms/version"
 	"html/template"
 	"path/filepath"
 	"time"
@@ -30,6 +31,7 @@ type MainPage struct {
 	AuthToken string
 	EmailMeta []*EmailMeta
 	Timezone  []string
+	Version   string
 }
 
 type EmailMeta struct {
@@ -43,6 +45,8 @@ type EmailMeta struct {
 func HomeHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	l := logs.GetLoggerctx(ctx)
+	d := MainPage{}
+	d.Version = version.GetLatestVersion()
 
 	tmpl, err := template.ParseFiles(filepath.Join(viper.GetString("app.uiTemplates"), "landing_page.html"))
 	if err != nil {
@@ -52,7 +56,7 @@ func HomeHandler(c *gin.Context) {
 	}
 
 	// Execute the template and write the output to the response
-	err = tmpl.Execute(c.Writer, nil)
+	err = tmpl.Execute(c.Writer, d)
 	if err != nil {
 		RenderErrorTemplate(c, "Internal server error occured", err)
 		l.Sugar().Errorf("execute template failed", err)
@@ -158,6 +162,8 @@ func MainPageHandler(c *gin.Context) {
 	d := MainPage{
 		AuthToken: authtoken,
 		EmailMeta: []*EmailMeta{},
+		Timezone:  []string{},
+		Version:   "",
 	}
 	for _, er := range emailRecords {
 		exp = false
@@ -181,6 +187,7 @@ func MainPageHandler(c *gin.Context) {
 		})
 	}
 	d.Timezone = constants.TimezonesSlice
+	d.Version = version.GetLatestVersion()
 	tmpl, err := template.ParseFiles(filepath.Join(viper.GetString("app.uiTemplates"), "mainpage.html"))
 	if err != nil {
 		RenderErrorTemplate(c, "Parse mainpage template failed", err)

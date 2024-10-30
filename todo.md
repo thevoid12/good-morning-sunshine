@@ -29,6 +29,7 @@
 - [ ] Add a favicon to the whole page 
 - [x] Add timezone feature and time customization feature
 - [ ]Add versioning
+- [ ]automate versioning using github action
 - [ ]timezone column in db along with ispremium
 - [x]inmemorycache
 - [x]the job should run every minute and read result from the cache. 
