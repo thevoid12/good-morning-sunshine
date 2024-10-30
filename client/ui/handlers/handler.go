@@ -268,7 +268,7 @@ func NewMailRecordHandler(c *gin.Context) {
 	}
 
 	cache := dbpkg.GetCacheFromctx(ctx)
-	cache.Set(fmt.Sprintf("%s", mailTime.Format("15:04:05")), &dbpkg.CacheEntry{
+	cache.Set(mailTime.Format("15:04"), &dbpkg.CacheEntry{
 		RecordID:      id,
 		EmailID:       emailID,
 		RandomNumbers: "",

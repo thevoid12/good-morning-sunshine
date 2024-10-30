@@ -27,14 +27,14 @@
 - [ ] Activate deactivated main id's
 - [ ] check if systemd automatically restarts when there is a server shutdown
 - [ ] Add a favicon to the whole page 
-- [ ] Add timezone feature and time customization feature
+- [x] Add timezone feature and time customization feature
 - [ ]Add versioning
 - [ ]timezone column in db along with ispremium
-- [ ]inmemorycache
-- [ ]the job should run every minute and read result from the cache. 
-- [ ]delete the result from the cache after expiring
-- [ ] cache should be reloaded interms of sudden restart
-- [ ]db upgrade
+- [x]inmemorycache
+- [x]the job should run every minute and read result from the cache. 
+- [x]delete the result from the cache after expiring
+- [x] cache should be reloaded interms of sudden restart
+- [x]db upgrade
 - [ ]remove keep hour and minute alone remove second from the cache
 
   <h1>Resources</h1>

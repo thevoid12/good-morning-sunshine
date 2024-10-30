@@ -73,7 +73,7 @@ func InitializeCache(ctx context.Context, cache *dbpkg.Cache) error {
 			return err
 		}
 		//cache key is the time and value is the array of details
-		cache.Set(mailTime.Format("15:04:05"), &dbpkg.CacheEntry{
+		cache.Set(mailTime.Format("15:04"), &dbpkg.CacheEntry{
 			RecordID:      record.ID,
 			EmailID:       record.EmailID,
 			RandomNumbers: record.RandomNumbers,

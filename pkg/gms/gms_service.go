@@ -30,7 +30,7 @@ func isTimeSynced() (bool, error) {
 	return strings.Contains(string(out), "System clock synchronized: yes"), nil
 }
 
-// GoodMrngSunshineJob sends runs  once in a day to check if there is any mail to be sent, if the mail needs to be sent, then it picks it up and sends the email
+// GoodMrngSunshineJob sends runs every minute to check if there is any mail to be sent, if the mail needs to be sent, then it picks it up and sends the email
 func GoodMrngSunshineJob(ctx context.Context) {
 	l := logs.GetLoggerctx(ctx)
 	l.Sugar().Info("welcome to good morning sunshine job", time.Now())
@@ -51,21 +51,11 @@ func GoodMrngSunshineJob(ctx context.Context) {
 		time.Sleep(5 * time.Second) // Retry every 5 seconds until time is synced
 	}
 
-	// Function to calculate the next run time at 6 AM IST
 	calcNextRunTime := func() time.Time {
 		now := time.Now()
-		nextRun := time.Date(
-			now.Year(), now.Month(), now.Day(),
-			viper.GetInt("gms.mailjobTimer.hour"),   // 6
-			viper.GetInt("gms.mailjobTimer.minute"), // 0
-			viper.GetInt("gms.mailjobTimer.second"), // 0
-			0, now.Location(),
-		)
+		// Round to the next minute
+		nextRun := now.Truncate(time.Minute).Add(time.Minute)
 
-		if now.After(nextRun) {
-			// If the current time is past 6 AM today, schedule for the next day
-			nextRun = nextRun.Add(24 * time.Hour)
-		}
 		return nextRun
 	}
 
@@ -78,23 +68,23 @@ func GoodMrngSunshineJob(ctx context.Context) {
 
 	// Wait until the first scheduled run
 	time.Sleep(initialDelay)
-	ticker := time.NewTicker(24 * time.Hour) // 24-hour ticker
+	ticker := time.NewTicker(1 * time.Minute) // ticks every minute
 	l.Sugar().Info(fmt.Sprintf("First job triggered at: %v", time.Now()))
 	cache := dbpkg.GetCacheFromctx(ctx)
 	go goodMorningSunshine(ctx, cache) // Run the first job
 
-	// Schedule the job to run every 24 hours, starting from 6 AM the next day
+	// Schedule the job to run every minute
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
-				l.Sugar().Info(fmt.Sprintf("The GMS job starts at: %v", time.Now()))
+				//l.Sugar().Info(fmt.Sprintf("The GMS job starts at: %v", time.Now()))
 				err := goodMorningSunshine(ctx, cache)
 				if err != nil {
 					l.Sugar().Error("Error running goodMorningSunshine:", err)
 					continue
 				}
-				l.Sugar().Info(fmt.Sprintf("The GMS job ends at: %v", time.Now()))
+			//	l.Sugar().Info(fmt.Sprintf("The GMS job ends at: %v", time.Now()))
 
 			case <-ctx.Done():
 				ticker.Stop()
@@ -112,16 +102,19 @@ func goodMorningSunshine(ctx context.Context, cache *dbpkg.Cache) error {
 	maxdays := viper.GetInt("gms.maxdays")
 	l := logs.GetLoggerctx(ctx)
 	//send mail to non expired mail ID's
-	curtime := time.Now().Format("15:04:05")
-	activeRecords := cache.Get(curtime)
-	if activeRecords == nil {
+	curtime := time.Now().Format("15:04")
+	Records := cache.Get(curtime)
+	if Records == nil {
 		return nil
 	}
+
 	randmap := make(map[int64]bool)
 	temp := ""
-	for i, ar := range activeRecords {
+	activeRecords := []*dbpkg.CacheEntry{}
+
+	for i, ar := range Records {
 		if ar.ExpiryDate.Before(time.Now()) { //remove the record from the cache
-			activeRecords = append(activeRecords[:i], activeRecords[i+1:]...)
+			activeRecords = append(Records[:i], Records[i+1:]...)
 		}
 
 		for _, rn := range ar.RandomNumbers {
