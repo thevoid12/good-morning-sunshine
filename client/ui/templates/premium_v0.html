@@ -1,67 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pricing Table</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        darkBg: '#1a1a1a',
-                        darkCard: '#2a2a2a',
-                    }
-                }
-            }
-        }
-    </script>
-</head>
-<body class="bg-gray-100 dark:bg-darkBg text-gray-900 dark:text-white transition-colors duration-300">
-    <div class="container mx-auto px-4 py-8">
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold">Pricing</h1>
-            <button id="darkModeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
-            </button>
-        </div>
-        <div class="grid md:grid-cols-2 gap-8">
-            <div class="bg-white dark:bg-darkCard rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-bold mb-4">Free</h2>
-                <div class="text-4xl font-bold mb-2">0$<span class="text-xl font-normal">/forever</span></div>
-                
-                <ul class="space-y-2">
-                    <li class="flex items-center"><svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Upto 3 new mail Link</li>
-                    <li class="flex items-center"><svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>15 days validity for each link</li>
-                    <li class="flex items-center"><svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Unlimited mail</li>
-                    <li class="flex items-center"><svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Pause or cancel anytime</li>
-                </ul>
-            </div>
-            <div class="bg-gray-800 dark:bg-darkCard text-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-bold mb-4">Pro</h2>
-                <div class="text-4xl font-bold mb-2">2$ or anything :3 <span class="text-xl font-normal">/A limited time small experiment to test customer product fit</span></div>
-                <button class="w-full bg-white text-gray-800 py-2 rounded-md mb-6" onclick="window.location.href='https://razorpay.me/@thevoidd1';">Subscribe</button>
-                <ul class="space-y-2">
-                    <li class="flex items-center"><svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Routine data analysis to gauge the individual's emotional state</li>
-                    <li class="flex items-center"><svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>No rate Limit</li>
-                    <li class="flex items-center"><svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Support multiple timezone</li>
-                    <li class="flex items-center"><svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Support multiple time</li>
-                    <li class="flex items-center"><svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Customized mail support</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <script>
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        const html = document.documentElement;
 
-        darkModeToggle.addEventListener('click', () => {
-            html.classList.toggle('dark');
-        });
-    </script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing Table</title>
+  <link href="/assets/css/output.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            darkBg: '#1a1a1a',
+            darkCard: '#2a2a2a',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-gray-100 dark:bg-darkBg text-gray-900 dark:text-white transition-colors duration-300">
+  <div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold">Pricing</h1>
+      <button id="darkModeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+      </button>
+    </div>
+    <div class="grid md:grid-cols-2 gap-8">
+      <div class="bg-white dark:bg-darkCard rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-bold mb-4">Free</h2>
+        <div class="text-4xl font-bold mb-2">0$<span class="text-xl font-normal">/forever</span></div>
+
+        <ul class="space-y-2">
+          <li class="flex items-center"><svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor"
+              viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>Upto 3 new mail Link</li>
+          <li class="flex items-center"><svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor"
+              viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>15 days validity for each link</li>
+          <li class="flex items-center"><svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor"
+              viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>Unlimited mail</li>
+          <li class="flex items-center"><svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor"
+              viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>Pause or cancel anytime</li>
+        </ul>
+      </div>
+      <div class="bg-gray-800 dark:bg-darkCard text-white rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-bold mb-4">Pro</h2>
+        <div class="text-4xl font-bold mb-2">2$ or anything :3 <span class="text-xl font-normal">/A limited time small
+            experiment to test customer product fit</span></div>
+        <button class="w-full bg-white text-gray-800 py-2 rounded-md mb-6"
+          onclick="window.location.href='https://razorpay.me/@thevoidd1';">Subscribe</button>
+        <ul class="space-y-2">
+          <li class="flex items-center"><svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor"
+              viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>Routine data analysis to gauge the individual's emotional state</li>
+          <li class="flex items-center"><svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor"
+              viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>No rate Limit</li>
+          <li class="flex items-center"><svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor"
+              viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>Support multiple timezone</li>
+          <li class="flex items-center"><svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor"
+              viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>Support multiple time</li>
+          <li class="flex items-center"><svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor"
+              viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>Customized mail support</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <script>
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const html = document.documentElement;
+
+    darkModeToggle.addEventListener('click', () => {
+      html.classList.toggle('dark');
+    });
+  </script>
 </body>
+
 </html>

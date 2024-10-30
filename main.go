@@ -4,8 +4,6 @@ import (
 	"context"
 	"gms/client/routes"
 
-	//"gms/pkg/email"
-
 	dbpkg "gms/pkg/db"
 	"gms/pkg/gms"
 	logs "gms/pkg/logger"

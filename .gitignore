@@ -2,3 +2,4 @@
 *.logs
 *.exe
 *.sqlite
+tailwindcss

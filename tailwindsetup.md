@@ -1,4 +1,4 @@
-Certainly, I understand you want to set up Tailwind CSS for a Go project with HTML templates without using npm or a CDN. This approach is more manual but can be done. Here's how you can do it:
+Tailwind CSS  without using npm or a CDN. This approach is more manual but can be done. Here's how you can do it: https://tailwindcss.com/docs/content-configuration
 
 Download Tailwind CSS directly:
 
@@ -58,3 +58,9 @@ This approach allows you to use Tailwind CSS without npm or a CDN. However, keep
 
 <h1>my configuration</h1>
 ./tailwindcss-windows-x64.exe -i ./client/ui/assets/css/input.css -o ./client/ui/assets/css/output.css 
+
+curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-macos-arm64
+chmod +x tailwindcss-macos-arm64
+mv tailwindcss-macos-arm64 tailwindcss
+./tailwindcss -i client/ui/assets/css/input.css -o client/ui/assets/css/output.css --config client/ui/tailwind.config.js --minify
+./tailwindcss init
