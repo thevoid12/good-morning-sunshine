@@ -38,7 +38,8 @@
 - [x]db upgrade
 - [x]remove keep hour and minute alone remove second from the cache
 - [ ]write a bash script makefile to make which includes compiling tailwind config minify for production and build
-- [ ]display the timezone in main page and remove 6am ist
+- [ ]js code cleanup and improve readability
+- [x]display the timezone in main page and remove 6am ist
 
   <h1>Resources</h1>
 -  https://iconsvg.xyz/
