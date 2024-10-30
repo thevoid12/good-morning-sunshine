@@ -158,9 +158,9 @@
       html.classList.toggle('dark');
     });
 
-    { { range.EmailMeta } }
+    {{ range .EmailMeta }}
     addEmail("{{.EmailID}}", "{{.DaysRemaining}}", "{{not .IsExpired}}", "{{.RecordID}}", "{{.EmailTz}}")
-    { { end } }
+    {{ end }}
   </script>
 </body>
 
