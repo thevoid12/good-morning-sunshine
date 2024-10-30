@@ -112,9 +112,9 @@ func goodMorningSunshine(ctx context.Context, cache *dbpkg.Cache) error {
 	temp := ""
 	activeRecords := []*dbpkg.CacheEntry{}
 
-	for i, ar := range Records {
+	for _, ar := range Records {
 		if ar.ExpiryDate.Before(time.Now()) { //remove the record from the cache
-			activeRecords = append(Records[:i], Records[i+1:]...)
+			continue
 		}
 
 		for _, rn := range ar.RandomNumbers {
@@ -155,6 +155,7 @@ func goodMorningSunshine(ctx context.Context, cache *dbpkg.Cache) error {
 		} else {
 			ar.RandomNumbers += "," + fmt.Sprintf("%d", randomIndex)
 		}
+
 		err := UpdateEmailRecRandNumber(ctx, ar.RecordID, ar.RandomNumbers)
 		if err != nil {
 			continue
@@ -167,6 +168,7 @@ func goodMorningSunshine(ctx context.Context, cache *dbpkg.Cache) error {
 			Subject:   "Your Daily Dose of Sunshine from Good Morning Sunshine",
 		})
 
+		activeRecords = append(activeRecords, ar)
 	}
 	//update the cache with the removed records
 	if len(activeRecords) == 0 {

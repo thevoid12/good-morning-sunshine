@@ -37,6 +37,7 @@ type EmailMeta struct {
 	EmailID       string
 	IsExpired     bool
 	DaysRemaining int
+	EmailTz       string
 }
 
 func HomeHandler(c *gin.Context) {
@@ -176,6 +177,7 @@ func MainPageHandler(c *gin.Context) {
 			EmailID:       er.EmailID,
 			IsExpired:     exp,
 			DaysRemaining: daysRem,
+			EmailTz:       er.TimeZone,
 		})
 	}
 	d.Timezone = constants.TimezonesSlice
