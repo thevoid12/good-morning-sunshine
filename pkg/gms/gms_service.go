@@ -353,6 +353,45 @@ func InitializeGmsCache(ctx context.Context, cache *dbpkg.Cache, l *zap.Logger) 
 	return nil
 }
 
+func ReInitializeGmsCache(ctx context.Context, cache *dbpkg.Cache, l *zap.Logger) error {
+	//get all the records
+	//load the valid values in the cache
+	emailRecords, err := ListActiveEmailIDs(ctx)
+	if err != nil {
+		return err
+	}
+
+	mpp := make(map[string][]*dbpkg.CacheEntry)
+	for _, record := range emailRecords {
+		mailTime, err := ConvertMailTime(record.TimeZone)
+		if err != nil {
+			return err
+		}
+		val := mpp[mailTime.Format("15:04")]
+		val = append(val, &dbpkg.CacheEntry{
+			RecordID:      record.ID,
+			EmailID:       record.EmailID,
+			RandomNumbers: record.RandomNumbers,
+			ExpiryDate:    record.ExpiryDate,
+		})
+		mpp[mailTime.Format("15:04")] = val
+
+	}
+
+	for key, value := range mpp {
+		cache.Update(key, value)
+	}
+
+	cache.CacheStore.Range(func(key, value interface{}) bool {
+		entry := value.([]*dbpkg.CacheEntry)
+		for _, val := range entry {
+			l.Sugar().Info(key, "::::", val.EmailID)
+		}
+		return true // continue iterating
+	})
+	return nil
+}
+
 /*******************************DATABASE *******************************************/
 
 func EmailRecordTable(ctx context.Context) error {
