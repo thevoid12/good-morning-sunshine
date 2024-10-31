@@ -40,7 +40,7 @@
 - [ ]write a bash script makefile to make which includes compiling tailwind config minify for production and build
 - [ ]js code cleanup and improve readability
 - [x]display the timezone in main page and remove 6am ist
-
+- [x]forgot activate and deactivate cache setting
   <h1>Resources</h1>
 -  https://iconsvg.xyz/
 -  https://www.material-tailwind.com/docs/html/button

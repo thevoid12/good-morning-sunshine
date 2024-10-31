@@ -44,7 +44,7 @@ func main() {
 	ctx = logs.SetLoggerctx(ctx, l)
 	ctx = dbpkg.SetCachectx(ctx, c)
 
-	err = InitializeCache(ctx, c)
+	err = gms.InitializeGmsCache(ctx, c, l)
 	if err != nil {
 		l.Sugar().Error("cache initialization failed", err)
 		return
@@ -55,30 +55,4 @@ func main() {
 
 	route := routes.Initialize(ctx, l)
 	route.Run(":" + viper.GetString("app.port"))
-}
-
-func InitializeCache(ctx context.Context, cache *dbpkg.Cache) error {
-	//get all the records
-	//load the valid values in the cache
-	emailRecords, err := gms.ListActiveEmailIDs(ctx)
-	if err != nil {
-		return err
-	}
-
-	for _, record := range emailRecords {
-		mailTime, err := gms.ConvertMailTime(record.TimeZone)
-		if err != nil {
-			return err
-		}
-		//cache key is the time and value is the array of details
-		cache.Set(mailTime.Format("15:04"), &dbpkg.CacheEntry{
-			RecordID:      record.ID,
-			EmailID:       record.EmailID,
-			RandomNumbers: record.RandomNumbers,
-			ExpiryDate:    record.ExpiryDate,
-		})
-
-	}
-
-	return nil
 }

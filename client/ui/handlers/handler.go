@@ -317,6 +317,12 @@ func ToggleRecordActivityHandler(c *gin.Context) {
 		RenderErrorTemplate(c, "Error changing Activity Status", err)
 		return
 	}
+	cache := dbpkg.GetCacheFromctx(ctx)
 
+	err = gms.InitializeGmsCache(ctx, cache, l)
+	if err != nil {
+		RenderErrorTemplate(c, "Cache Reinitialization failed", err)
+		return
+	}
 	c.Redirect(302, fmt.Sprintf("/auth/gms?tkn=%s", authtoken))
 }

@@ -18,6 +18,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
 	"golang.org/x/exp/rand"
 )
 
@@ -315,7 +316,41 @@ func ConvertMailTime(tz string) (time.Time, error) {
 	// Convert the time to IST
 	istTime := srcTime.In(istLocation)
 
-	return istTime, nil
+	utcTime := istTime.UTC()
+	return utcTime, nil
+}
+
+func InitializeGmsCache(ctx context.Context, cache *dbpkg.Cache, l *zap.Logger) error {
+	//get all the records
+	//load the valid values in the cache
+	emailRecords, err := ListActiveEmailIDs(ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, record := range emailRecords {
+		mailTime, err := ConvertMailTime(record.TimeZone)
+		if err != nil {
+			return err
+		}
+		//cache key is the time and value is the array of details
+		cache.Set(mailTime.Format("15:04"), &dbpkg.CacheEntry{
+			RecordID:      record.ID,
+			EmailID:       record.EmailID,
+			RandomNumbers: record.RandomNumbers,
+			ExpiryDate:    record.ExpiryDate,
+		})
+
+	}
+
+	cache.CacheStore.Range(func(key, value interface{}) bool {
+		entry := value.([]*dbpkg.CacheEntry)
+		for _, val := range entry {
+			l.Sugar().Info(key, "::::", val.EmailID)
+		}
+		return true // continue iterating
+	})
+	return nil
 }
 
 /*******************************DATABASE *******************************************/
@@ -745,16 +780,15 @@ func HardDeleteExpiredEmailIDs(ctx context.Context, thresholdTime time.Time) err
 
 	return nil
 }
-func ToggleActivityStatus(ctx context.Context, recordID string, isActive string) error {
+func ToggleActivityStatus(ctx context.Context, recordID string, isActive string) (err error) {
 	if isActive == "1" {
-		err := SoftDeleteRecordsByID(ctx, recordID)
-		return err
-	} else {
-		err := ActivateDeleteRecordsByID(ctx, recordID)
-		return err
-	}
+		err = SoftDeleteRecordsByID(ctx, recordID)
 
-	return nil
+	} else {
+		err = ActivateDeleteRecordsByID(ctx, recordID)
+
+	}
+	return err
 }
 
 func SoftDeleteRecordsByID(ctx context.Context, recordID string) error {
