@@ -319,7 +319,7 @@ func ToggleRecordActivityHandler(c *gin.Context) {
 	}
 	cache := dbpkg.GetCacheFromctx(ctx)
 
-	err = gms.InitializeGmsCache(ctx, cache, l)
+	err = gms.ReInitializeGmsCache(ctx, cache, l)
 	if err != nil {
 		RenderErrorTemplate(c, "Cache Reinitialization failed", err)
 		return
